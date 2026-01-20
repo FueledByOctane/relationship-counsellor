@@ -8,9 +8,11 @@ import ChatContainer from '@/components/ChatContainer';
 export default function RoomPage() {
   const params = useParams();
   const router = useRouter();
-  const { roomId, participant, setRoomId } = useChatStore();
+  const { roomId, participant, setRoomId, _hasHydrated } = useChatStore();
 
   useEffect(() => {
+    if (!_hasHydrated) return;
+
     // If no participant is set, redirect to home
     if (!participant) {
       router.push(`/?code=${params.roomId}`);
@@ -21,10 +23,10 @@ export default function RoomPage() {
     if (!roomId && params.roomId) {
       setRoomId(params.roomId as string);
     }
-  }, [participant, roomId, params.roomId, router, setRoomId]);
+  }, [_hasHydrated, participant, roomId, params.roomId, router, setRoomId]);
 
-  // Show loading state while checking auth
-  if (!participant) {
+  // Show loading state while hydrating or checking auth
+  if (!_hasHydrated || !participant) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">

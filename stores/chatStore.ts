@@ -9,6 +9,7 @@ interface ChatState {
   messages: Message[];
   isTyping: { [key: string]: boolean };
   isCounsellorTyping: boolean;
+  _hasHydrated: boolean;
   setRoomId: (roomId: string) => void;
   setParticipant: (participant: Participant) => void;
   setPartner: (partner: Participant | null) => void;
@@ -16,6 +17,7 @@ interface ChatState {
   setMessages: (messages: Message[]) => void;
   setTyping: (senderId: string, isTyping: boolean) => void;
   setCounsellorTyping: (isTyping: boolean) => void;
+  setHasHydrated: (state: boolean) => void;
   reset: () => void;
 }
 
@@ -28,6 +30,7 @@ export const useChatStore = create<ChatState>()(
       messages: [],
       isTyping: {},
       isCounsellorTyping: false,
+      _hasHydrated: false,
 
       setRoomId: (roomId: string) => set({ roomId }),
 
@@ -50,6 +53,8 @@ export const useChatStore = create<ChatState>()(
       setCounsellorTyping: (isTyping: boolean) =>
         set({ isCounsellorTyping: isTyping }),
 
+      setHasHydrated: (state: boolean) => set({ _hasHydrated: state }),
+
       reset: () =>
         set({
           roomId: null,
@@ -66,6 +71,9 @@ export const useChatStore = create<ChatState>()(
         roomId: state.roomId,
         participant: state.participant,
       }),
+      onRehydrateStorage: () => (state) => {
+        state?.setHasHydrated(true);
+      },
     }
   )
 );

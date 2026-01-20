@@ -1,8 +1,17 @@
 'use client';
 
 import { Suspense } from 'react';
-import CreateRoomForm from '@/components/CreateRoomForm';
-import JoinRoomForm from '@/components/JoinRoomForm';
+import dynamic from 'next/dynamic';
+
+const CreateRoomForm = dynamic(() => import('@/components/CreateRoomForm'), {
+  ssr: false,
+  loading: () => <div className="h-32 animate-pulse bg-gray-100 rounded-lg" />,
+});
+
+const JoinRoomForm = dynamic(() => import('@/components/JoinRoomForm'), {
+  ssr: false,
+  loading: () => <div className="h-40 animate-pulse bg-gray-100 rounded-lg" />,
+});
 
 function HomeContent() {
   return (
@@ -50,8 +59,7 @@ function HomeContent() {
 
         <div className="mt-12 text-center text-gray-500 text-sm">
           <p>
-            Your conversations are private and secure. The AI counsellor provides
-            guidance when you request it.
+            Your conversations are private and secure. The AI therapist guides your conversation.
           </p>
         </div>
       </div>
