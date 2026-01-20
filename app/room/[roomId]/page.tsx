@@ -1,0 +1,39 @@
+'use client';
+
+import { useEffect } from 'react';
+import { useParams, useRouter } from 'next/navigation';
+import { useChatStore } from '@/stores/chatStore';
+import ChatContainer from '@/components/ChatContainer';
+
+export default function RoomPage() {
+  const params = useParams();
+  const router = useRouter();
+  const { roomId, participant, setRoomId } = useChatStore();
+
+  useEffect(() => {
+    // If no participant is set, redirect to home
+    if (!participant) {
+      router.push(`/?code=${params.roomId}`);
+      return;
+    }
+
+    // Set room ID if not already set
+    if (!roomId && params.roomId) {
+      setRoomId(params.roomId as string);
+    }
+  }, [participant, roomId, params.roomId, router, setRoomId]);
+
+  // Show loading state while checking auth
+  if (!participant) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full mx-auto mb-4" />
+          <p className="text-gray-600">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  return <ChatContainer />;
+}
