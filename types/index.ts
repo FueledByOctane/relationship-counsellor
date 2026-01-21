@@ -19,6 +19,7 @@ export interface Participant {
   name: string;
   role: 'partner-a' | 'partner-b';
   isOnline: boolean;
+  isPaid?: boolean;
 }
 
 export interface TypingStatus {
@@ -49,5 +50,6 @@ export interface PusherMember {
   info: {
     name: string;
     role: 'partner-a' | 'partner-b';
+    isPaid?: boolean;
   };
 }

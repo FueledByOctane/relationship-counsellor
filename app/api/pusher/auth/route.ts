@@ -11,6 +11,7 @@ export async function POST(request: Request) {
     const userId = url.searchParams.get('user_id');
     const userName = url.searchParams.get('user_name');
     const userRole = url.searchParams.get('user_role');
+    const isPaid = url.searchParams.get('is_paid') === 'true';
 
     if (!socketId || !channelName) {
       return NextResponse.json(
@@ -34,6 +35,7 @@ export async function POST(request: Request) {
         user_info: {
           name: userName,
           role: userRole,
+          isPaid: isPaid,
         },
       };
 

@@ -1,10 +1,17 @@
 import { NextResponse } from 'next/server';
 import { getPusherServer } from '@/lib/pusher-server';
-import { createOpenAIClient, COUNSELLOR_SYSTEM_PROMPT } from '@/lib/openai';
+import { createOpenAIClient } from '@/lib/openai';
+import { COUNSELLOR_PROMPTS, type GuidanceMode } from '@/lib/prompts';
 import { v4 as uuidv4 } from 'uuid';
 import type { Message } from '@/types';
 
-async function triggerCounsellorResponse(roomId: string, allMessages: Message[]) {
+async function triggerCounsellorResponse(
+  roomId: string,
+  allMessages: Message[],
+  guidanceMode: GuidanceMode = 'standard',
+  partnerAName?: string,
+  partnerBName?: string
+) {
   const openAiKey = process.env.OPENAI_API_KEY;
   if (!openAiKey) return;
 
@@ -17,6 +24,22 @@ async function triggerCounsellorResponse(roomId: string, allMessages: Message[])
       isTyping: true,
     });
 
+    // Extract partner names from messages if not provided
+    if (!partnerAName || !partnerBName) {
+      const partnerAMsg = allMessages.find(m => m.senderRole === 'partner-a');
+      const partnerBMsg = allMessages.find(m => m.senderRole === 'partner-b');
+      partnerAName = partnerAMsg?.senderName || 'Partner A';
+      partnerBName = partnerBMsg?.senderName || 'Partner B';
+    }
+
+    // Get the appropriate system prompt based on guidance mode
+    let systemPrompt = COUNSELLOR_PROMPTS[guidanceMode] || COUNSELLOR_PROMPTS.standard;
+
+    // Replace placeholders with actual names
+    // Add context about who is who at the start of the prompt
+    const nameContext = `\n\nParticipants in this session:\n- ${partnerAName} (Partner A)\n- ${partnerBName} (Partner B)\n\nUse their actual names when addressing them, never "[Name]" or "[Partner]".`;
+    systemPrompt = systemPrompt + nameContext;
+
     // Format messages for OpenAI
     const formattedMessages = allMessages.map((msg: Message) => ({
       role: msg.senderRole === 'counsellor' ? 'assistant' as const : 'user' as const,
@@ -27,7 +50,7 @@ async function triggerCounsellorResponse(roomId: string, allMessages: Message[])
     const completion = await openai.chat.completions.create({
       model: 'gpt-4o-mini',
       messages: [
-        { role: 'system', content: COUNSELLOR_SYSTEM_PROMPT },
+        { role: 'system', content: systemPrompt },
         ...formattedMessages,
       ],
     });
@@ -64,7 +87,7 @@ async function triggerCounsellorResponse(roomId: string, allMessages: Message[])
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { roomId, senderId, senderName, senderRole, content, allMessages } = body;
+    const { roomId, senderId, senderName, senderRole, content, allMessages, guidanceMode, partnerName } = body;
 
     if (!roomId || !senderId || !senderName || !senderRole || !content) {
       return NextResponse.json(
@@ -86,9 +109,13 @@ export async function POST(request: Request) {
     const pusher = getPusherServer();
     await pusher.trigger(`presence-room-${roomId}`, 'new-message', message);
 
+    // Determine partner names based on who sent this message
+    const partnerAName = senderRole === 'partner-a' ? senderName : partnerName;
+    const partnerBName = senderRole === 'partner-b' ? senderName : partnerName;
+
     // Trigger counsellor response asynchronously (don't await)
     const messagesForCounsellor = [...(allMessages || []), message];
-    triggerCounsellorResponse(roomId, messagesForCounsellor);
+    triggerCounsellorResponse(roomId, messagesForCounsellor, guidanceMode || 'standard', partnerAName, partnerBName);
 
     return NextResponse.json({ success: true, message });
   } catch (error) {

@@ -70,6 +70,7 @@ export const useChatStore = create<ChatState>()(
       partialize: (state) => ({
         roomId: state.roomId,
         participant: state.participant,
+        messages: state.messages,
       }),
       onRehydrateStorage: () => (state) => {
         state?.setHasHydrated(true);

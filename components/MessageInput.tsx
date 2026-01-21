@@ -2,11 +2,33 @@
 
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { useChatStore } from '@/stores/chatStore';
+import type { GuidanceMode } from '@/lib/prompts';
 
-export default function MessageInput() {
+interface UsageData {
+  tier: 'free' | 'paid';
+  weeklyUsageCount: number;
+  weeklyLimit: number | null;
+  canInteract: boolean;
+}
+
+interface MessageInputProps {
+  guidanceMode: GuidanceMode;
+  usageData: UsageData | null;
+  isPaid: boolean; // Combined status: true if either partner has premium
+  onLimitReached: () => void;
+  onUsageUpdated: () => void;
+}
+
+export default function MessageInput({
+  guidanceMode,
+  usageData,
+  isPaid,
+  onLimitReached,
+  onUsageUpdated,
+}: MessageInputProps) {
   const [message, setMessage] = useState('');
   const [isSending, setIsSending] = useState(false);
-  const { roomId, participant, messages: allMessages } = useChatStore();
+  const { roomId, participant, partner, messages: allMessages } = useChatStore();
   const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const isTypingRef = useRef(false);
 
@@ -47,10 +69,28 @@ export default function MessageInput() {
     e.preventDefault();
     if (!message.trim() || !roomId || !participant || isSending) return;
 
+    // Check usage limits - skip if either partner has premium (isPaid includes partner's status)
+    if (!isPaid && usageData && !usageData.canInteract) {
+      onLimitReached();
+      return;
+    }
+
     setIsSending(true);
     sendTypingStatus(false);
 
     try {
+      // Increment usage for tracking (only for non-premium rooms)
+      if (!isPaid) {
+        const usageResponse = await fetch('/api/usage', { method: 'POST' });
+        const usageResult = await usageResponse.json();
+
+        if (!usageResult.allowed) {
+          onLimitReached();
+          setIsSending(false);
+          return;
+        }
+      }
+
       const response = await fetch('/api/message', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -61,6 +101,8 @@ export default function MessageInput() {
           senderRole: participant.role,
           content: message.trim(),
           allMessages,
+          guidanceMode,
+          partnerName: partner?.name,
         }),
       });
 
@@ -69,6 +111,7 @@ export default function MessageInput() {
       }
 
       setMessage('');
+      onUsageUpdated();
     } catch (error) {
       console.error('Error sending message:', error);
     } finally {
@@ -91,21 +134,39 @@ export default function MessageInput() {
     };
   }, []);
 
+  // Only show limit reached if not in a premium room (isPaid includes partner's status)
+  const isLimitReached = !isPaid && usageData?.tier === 'free' && !usageData?.canInteract;
+
   return (
     <div className="border-t border-gray-200 p-4 bg-white">
+      {isLimitReached && (
+        <div className="mb-3 p-3 bg-amber-50 border border-amber-200 rounded-lg text-sm text-amber-700">
+          You&apos;ve reached your weekly limit of 5 interactions.
+          <button
+            onClick={onLimitReached}
+            className="ml-1 font-medium text-amber-800 underline hover:no-underline"
+          >
+            Upgrade to continue
+          </button>
+        </div>
+      )}
       <form onSubmit={handleSubmit} className="flex gap-2">
         <textarea
           value={message}
           onChange={handleInputChange}
           onKeyDown={handleKeyDown}
-          placeholder="Type your message... (Enter to send, Shift+Enter for new line)"
-          className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition resize-none"
+          placeholder={isLimitReached
+            ? "Upgrade to continue the conversation..."
+            : "Type your message... (Enter to send, Shift+Enter for new line)"}
+          className={`flex-1 px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition resize-none ${
+            isLimitReached ? 'border-amber-300 bg-amber-50' : 'border-gray-300'
+          }`}
           rows={2}
-          disabled={isSending}
+          disabled={isSending || isLimitReached}
         />
         <button
           type="submit"
-          disabled={isSending || !message.trim()}
+          disabled={isSending || !message.trim() || isLimitReached}
           className="px-6 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition self-end"
         >
           Send

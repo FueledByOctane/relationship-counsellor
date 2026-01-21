@@ -27,7 +27,7 @@ export default function JoinRoomForm() {
       return;
     }
     if (!roomCode.trim()) {
-      setError('Please enter a room code');
+      setError('Please enter a field code');
       return;
     }
 
@@ -47,7 +47,7 @@ export default function JoinRoomForm() {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || 'Failed to join room');
+        throw new Error(data.error || 'Failed to join field');
       }
 
       setRoomId(data.roomId);
@@ -78,11 +78,11 @@ export default function JoinRoomForm() {
       </div>
 
       <div>
-        <label htmlFor="room-code" className="block text-sm font-medium text-gray-700 mb-1">
-          Room Code
+        <label htmlFor="field-code" className="block text-sm font-medium text-gray-700 mb-1">
+          Field Code
         </label>
         <input
-          id="room-code"
+          id="field-code"
           type="text"
           value={roomCode}
           onChange={(e) => setRoomCode(e.target.value.toUpperCase())}
@@ -102,7 +102,7 @@ export default function JoinRoomForm() {
         disabled={isLoading}
         className="w-full py-2 px-4 bg-green-600 text-white font-medium rounded-lg hover:bg-green-700 focus:ring-2 focus:ring-green-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition"
       >
-        {isLoading ? 'Joining...' : 'Join Room'}
+        {isLoading ? 'Joining...' : 'Join Field'}
       </button>
     </form>
   );

@@ -9,6 +9,7 @@ interface UserInfo {
   id: string;
   name: string;
   role: string;
+  isPaid?: boolean;
 }
 
 export function getPusherClient(userInfo?: UserInfo): PusherClient {
@@ -22,7 +23,7 @@ export function getPusherClient(userInfo?: UserInfo): PusherClient {
   }
 
   const authParams = userInfo
-    ? `user_id=${userInfo.id}&user_name=${encodeURIComponent(userInfo.name)}&user_role=${userInfo.role}`
+    ? `user_id=${userInfo.id}&user_name=${encodeURIComponent(userInfo.name)}&user_role=${userInfo.role}&is_paid=${userInfo.isPaid ? 'true' : 'false'}`
     : '';
 
   // If user info changed, create a new instance
