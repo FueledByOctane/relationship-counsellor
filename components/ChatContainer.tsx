@@ -48,6 +48,7 @@ export default function ChatContainer() {
   const partnerRef = useRef<Participant | null>(partner);
   const messagesRef = useRef<Message[]>(messages);
   const hasAnnouncedRef = useRef(false);
+  const counsellorTypingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Keep refs updated
   useEffect(() => {
@@ -246,6 +247,21 @@ export default function ChatContainer() {
 
     channel.bind('counsellor-typing', (data: { isTyping: boolean }) => {
       setCounsellorTyping(data.isTyping);
+
+      // Clear any existing timeout
+      if (counsellorTypingTimeoutRef.current) {
+        clearTimeout(counsellorTypingTimeoutRef.current);
+        counsellorTypingTimeoutRef.current = null;
+      }
+
+      // If counsellor starts typing, set a 30-second timeout to auto-clear
+      // This prevents the UI from getting stuck if the server times out
+      if (data.isTyping) {
+        counsellorTypingTimeoutRef.current = setTimeout(() => {
+          setCounsellorTyping(false);
+          counsellorTypingTimeoutRef.current = null;
+        }, 30000);
+      }
     });
 
     channel.bind('counsellor-stream-start', (data: { id: string }) => {
@@ -262,6 +278,11 @@ export default function ChatContainer() {
       addMessage(message);
       streamingMessageRef.current = null;
       setCounsellorTyping(false);
+      // Clear the typing timeout since we got a response
+      if (counsellorTypingTimeoutRef.current) {
+        clearTimeout(counsellorTypingTimeoutRef.current);
+        counsellorTypingTimeoutRef.current = null;
+      }
       // Refresh usage data after counsellor responds
       fetchUsageData();
     });
@@ -295,6 +316,11 @@ export default function ChatContainer() {
     return () => {
       channel.unbind_all();
       pusher.unsubscribe(`presence-room-${roomId}`);
+      // Clean up typing timeout
+      if (counsellorTypingTimeoutRef.current) {
+        clearTimeout(counsellorTypingTimeoutRef.current);
+        counsellorTypingTimeoutRef.current = null;
+      }
     };
   }, [roomId, participant?.id, participant?.name, participant?.role, pusherPaidStatus, setPartner, addMessage, mergeMessages, setTyping, setCounsellorTyping]);
 

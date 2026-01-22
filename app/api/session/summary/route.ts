@@ -55,6 +55,8 @@ export async function POST(req: Request) {
         { role: 'user', content: `Here is the session transcript:\n\n${transcript}` },
       ],
       max_tokens: 1000,
+    }, {
+      timeout: 25000,
     });
 
     const summary = completion.choices[0]?.message?.content || '';

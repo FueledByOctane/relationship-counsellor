@@ -46,13 +46,16 @@ async function triggerCounsellorResponse(
       content: msg.senderRole === 'counsellor' ? msg.content : `[${msg.senderName}]: ${msg.content}`,
     }));
 
-    // Get response from OpenAI
+    // Get response from OpenAI with 25-second timeout
+    // This ensures we fail gracefully before Vercel's serverless timeout
     const completion = await openai.chat.completions.create({
       model: 'gpt-4o-mini',
       messages: [
         { role: 'system', content: systemPrompt },
         ...formattedMessages,
       ],
+    }, {
+      timeout: 25000,
     });
 
     const responseContent = completion.choices[0]?.message?.content || '';

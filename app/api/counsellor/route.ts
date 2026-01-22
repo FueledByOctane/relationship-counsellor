@@ -39,7 +39,7 @@ export async function POST(request: Request) {
       content: `[${msg.senderName}]: ${msg.content}`,
     }));
 
-    // Get streaming response from OpenAI
+    // Get streaming response from OpenAI with 25-second timeout
     const stream = await openai.chat.completions.create({
       model: 'gpt-4o-mini',
       messages: [
@@ -47,6 +47,8 @@ export async function POST(request: Request) {
         ...formattedMessages,
       ],
       stream: true,
+    }, {
+      timeout: 25000,
     });
 
     let fullContent = '';
