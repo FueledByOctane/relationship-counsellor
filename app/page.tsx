@@ -6,7 +6,7 @@ import Link from 'next/link';
 
 const CreateRoomForm = dynamic(() => import('@/components/CreateRoomForm'), {
   ssr: false,
-  loading: () => <div className="h-32 animate-pulse bg-gray-100 rounded-lg" />,
+  loading: () => <div className="h-48 animate-pulse bg-gray-100 rounded-lg" />,
 });
 
 const JoinRoomForm = dynamic(() => import('@/components/JoinRoomForm'), {
@@ -19,6 +19,11 @@ const ClerkComponents = dynamic(
   () => import('@/components/ClerkComponents').then(mod => mod.ClerkComponents),
   { ssr: false, loading: () => null }
 );
+
+const MyFields = dynamic(() => import('@/components/MyFields'), {
+  ssr: false,
+  loading: () => null,
+});
 
 function RoomCards() {
   return (
@@ -138,6 +143,7 @@ function HomeContent() {
 
           {mounted ? (
             <ClerkComponents variant="main">
+              <MyFields />
               <RoomCards />
               <FeaturePreview />
             </ClerkComponents>

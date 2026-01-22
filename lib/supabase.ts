@@ -58,10 +58,26 @@ export interface Profile {
 export interface Session {
   id: string;
   profile_id: string;
+  field_id: string | null;
   room_id: string;
   messages: object | null;
   summary: string | null;
   guidance_mode: string | null;
+  created_at: string;
+}
+
+export interface Field {
+  id: string;
+  code: string;
+  name: string | null;
+  creator_id: string | null;
+  partner_a_id: string | null;
+  partner_a_name: string | null;
+  partner_b_id: string | null;
+  partner_b_name: string | null;
+  guidance_mode: string;
+  is_active: boolean;
+  last_activity_at: string;
   created_at: string;
 }
 

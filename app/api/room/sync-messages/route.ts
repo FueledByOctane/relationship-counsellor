@@ -1,10 +1,11 @@
 import { NextResponse } from 'next/server';
 import { getPusherServer } from '@/lib/pusher-server';
+import type { Message } from '@/types';
 
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { roomId, senderId, guidanceMode, isPaid, fieldName } = body;
+    const { roomId, senderId, messages } = body;
 
     if (!roomId || !senderId) {
       return NextResponse.json(
@@ -14,18 +15,16 @@ export async function POST(request: Request) {
     }
 
     const pusher = getPusherServer();
-    await pusher.trigger(`presence-room-${roomId}`, 'room-settings', {
+    await pusher.trigger(`presence-room-${roomId}`, 'sync-messages', {
       senderId,
-      guidanceMode,
-      isPaid,
-      fieldName,
+      messages: messages || [],
     });
 
     return NextResponse.json({ success: true });
   } catch (error) {
-    console.error('Room settings broadcast error:', error);
+    console.error('Message sync error:', error);
     return NextResponse.json(
-      { error: 'Failed to broadcast room settings' },
+      { error: 'Failed to sync messages' },
       { status: 500 }
     );
   }

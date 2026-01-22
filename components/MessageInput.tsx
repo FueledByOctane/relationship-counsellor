@@ -3,6 +3,7 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { useChatStore } from '@/stores/chatStore';
 import type { GuidanceMode } from '@/lib/prompts';
+import { v4 as uuidv4 } from 'uuid';
 
 interface UsageData {
   tier: 'free' | 'paid';
@@ -19,6 +20,22 @@ interface MessageInputProps {
   onUsageUpdated: () => void;
 }
 
+// Helper to create fetch with timeout
+async function fetchWithTimeout(url: string, options: RequestInit, timeoutMs: number = 30000): Promise<Response> {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+
+  try {
+    const response = await fetch(url, {
+      ...options,
+      signal: controller.signal,
+    });
+    return response;
+  } finally {
+    clearTimeout(timeoutId);
+  }
+}
+
 export default function MessageInput({
   guidanceMode,
   usageData,
@@ -28,7 +45,8 @@ export default function MessageInput({
 }: MessageInputProps) {
   const [message, setMessage] = useState('');
   const [isSending, setIsSending] = useState(false);
-  const { roomId, participant, partner, messages: allMessages } = useChatStore();
+  const [error, setError] = useState<string | null>(null);
+  const { roomId, participant, partner, messages: allMessages, addMessage } = useChatStore();
   const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const isTypingRef = useRef(false);
 
@@ -76,12 +94,13 @@ export default function MessageInput({
     }
 
     setIsSending(true);
+    setError(null);
     sendTypingStatus(false);
 
     try {
       // Increment usage for tracking (only for non-premium rooms)
       if (!isPaid) {
-        const usageResponse = await fetch('/api/usage', { method: 'POST' });
+        const usageResponse = await fetchWithTimeout('/api/usage', { method: 'POST' }, 10000);
         const usageResult = await usageResponse.json();
 
         if (!usageResult.allowed) {
@@ -91,29 +110,64 @@ export default function MessageInput({
         }
       }
 
-      const response = await fetch('/api/message', {
+      // Generate message ID client-side for optimistic update
+      const messageId = uuidv4();
+      const trimmedContent = message.trim();
+
+      // Optimistic update: add message to local state immediately
+      const optimisticMessage = {
+        id: messageId,
+        roomId,
+        senderId: participant.id,
+        senderName: participant.name,
+        senderRole: participant.role,
+        content: trimmedContent,
+        timestamp: Date.now(),
+      };
+      addMessage(optimisticMessage);
+
+      // Clear message input immediately for better UX
+      setMessage('');
+
+      // Limit message history to last 50 messages to prevent large payloads
+      const recentMessages = [...allMessages.slice(-49), optimisticMessage];
+
+      const response = await fetchWithTimeout('/api/message', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           roomId,
+          messageId, // Pass the ID so server uses the same one
           senderId: participant.id,
           senderName: participant.name,
           senderRole: participant.role,
-          content: message.trim(),
-          allMessages,
+          content: trimmedContent,
+          allMessages: recentMessages,
           guidanceMode,
           partnerName: partner?.name,
         }),
-      });
+      }, 30000);
 
       if (!response.ok) {
-        throw new Error('Failed to send message');
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || 'Failed to send message');
       }
 
-      setMessage('');
+      setError(null);
       onUsageUpdated();
-    } catch (error) {
-      console.error('Error sending message:', error);
+    } catch (err) {
+      console.error('Error sending message:', err);
+      if (err instanceof Error) {
+        if (err.name === 'AbortError') {
+          setError('Request timed out. Please try again.');
+        } else if (err.message.includes('load failed') || err.message.includes('Failed to fetch')) {
+          setError('Network error. Please check your connection and try again.');
+        } else {
+          setError(err.message || 'Failed to send message. Please try again.');
+        }
+      } else {
+        setError('Failed to send message. Please try again.');
+      }
     } finally {
       setIsSending(false);
     }
@@ -139,6 +193,18 @@ export default function MessageInput({
 
   return (
     <div className="border-t border-gray-200 p-4 bg-white">
+      {error && (
+        <div className="mb-3 p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-700 flex items-center justify-between">
+          <span>{error}</span>
+          <button
+            onClick={() => setError(null)}
+            className="ml-2 text-red-500 hover:text-red-700"
+            aria-label="Dismiss error"
+          >
+            ✕
+          </button>
+        </div>
+      )}
       {isLimitReached && (
         <div className="mb-3 p-3 bg-amber-50 border border-amber-200 rounded-lg text-sm text-amber-700">
           You&apos;ve reached your weekly limit of 5 interactions.

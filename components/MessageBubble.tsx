@@ -9,21 +9,30 @@ interface MessageBubbleProps {
 
 export default function MessageBubble({ message, isOwn }: MessageBubbleProps) {
   const isCounsellor = message.senderRole === 'counsellor';
+  const isPartnerA = message.senderRole === 'partner-a';
+  const isPartnerB = message.senderRole === 'partner-b';
 
   const getBubbleStyles = () => {
     if (isCounsellor) {
       return 'bg-purple-100 text-purple-900 border border-purple-200';
     }
-    if (isOwn) {
+    if (isPartnerA) {
       return 'bg-blue-600 text-white';
     }
-    return 'bg-gray-100 text-gray-900';
+    // Partner B
+    return 'bg-green-600 text-white';
   };
 
   const getNameColor = () => {
     if (isCounsellor) return 'text-purple-600';
-    if (message.senderRole === 'partner-a') return 'text-blue-600';
+    if (isPartnerA) return 'text-blue-600';
     return 'text-green-600';
+  };
+
+  const getAlignment = () => {
+    if (isCounsellor) return 'items-center';
+    if (isPartnerA) return 'items-start'; // Partner A on left
+    return 'items-end'; // Partner B on right
   };
 
   const formatTime = (timestamp: number) => {
@@ -34,15 +43,11 @@ export default function MessageBubble({ message, isOwn }: MessageBubbleProps) {
   };
 
   return (
-    <div
-      className={`flex flex-col ${
-        isCounsellor ? 'items-center' : isOwn ? 'items-end' : 'items-start'
-      } mb-4`}
-    >
+    <div className={`flex flex-col ${getAlignment()} mb-4`}>
       <div
         className={`max-w-[80%] ${isCounsellor ? 'w-full max-w-2xl' : ''}`}
       >
-        <div className={`flex items-center gap-2 mb-1 ${isOwn && !isCounsellor ? 'justify-end' : ''}`}>
+        <div className={`flex items-center gap-2 mb-1 ${isPartnerB ? 'justify-end' : ''}`}>
           <span className={`text-xs font-medium ${getNameColor()}`}>
             {isCounsellor ? '🧠 Counsellor' : message.senderName}
           </span>

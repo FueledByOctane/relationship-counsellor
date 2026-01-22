@@ -11,7 +11,7 @@ export default function JoinRoomForm() {
   const [error, setError] = useState('');
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { setRoomId, setParticipant } = useChatStore();
+  const { setRoomId, setParticipant, setFieldName, clearMessages, loadRoomMessages } = useChatStore();
 
   useEffect(() => {
     const code = searchParams.get('code');
@@ -35,6 +35,9 @@ export default function JoinRoomForm() {
     setError('');
 
     try {
+      // Clear messages only - we'll load room-specific messages after
+      clearMessages();
+
       const response = await fetch('/api/room/join', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -52,6 +55,10 @@ export default function JoinRoomForm() {
 
       setRoomId(data.roomId);
       setParticipant(data.participant);
+      // Set field name from API response
+      setFieldName(data.field?.name || null);
+      // Load existing messages for this room
+      loadRoomMessages(data.roomId);
       router.push(`/room/${data.roomId}`);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Something went wrong');

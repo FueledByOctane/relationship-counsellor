@@ -26,11 +26,14 @@ export default function ChatContainer() {
   const { user } = useUser();
   const {
     roomId,
+    fieldName,
     participant,
     partner,
     messages,
     setPartner,
+    setFieldName,
     addMessage,
+    mergeMessages,
     setTyping,
     setCounsellorTyping,
   } = useChatStore();
@@ -43,12 +46,35 @@ export default function ChatContainer() {
   const [upgradeReason, setUpgradeReason] = useState<'limit-reached' | 'feature-locked' | 'general'>('general');
   const streamingMessageRef = useRef<{ id: string; content: string } | null>(null);
   const partnerRef = useRef<Participant | null>(partner);
+  const messagesRef = useRef<Message[]>(messages);
   const hasAnnouncedRef = useRef(false);
 
-  // Keep partner ref updated
+  // Keep refs updated
   useEffect(() => {
     partnerRef.current = partner;
   }, [partner]);
+
+  useEffect(() => {
+    messagesRef.current = messages;
+  }, [messages]);
+
+  // Broadcast messages to sync with partner
+  const broadcastMessages = async () => {
+    if (!roomId || !participant || messagesRef.current.length === 0) return;
+    try {
+      await fetch('/api/room/sync-messages', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          roomId,
+          senderId: participant.id,
+          messages: messagesRef.current,
+        }),
+      });
+    } catch (error) {
+      console.error('Error broadcasting messages:', error);
+    }
+  };
 
   // Fetch usage data
   useEffect(() => {
@@ -95,7 +121,7 @@ export default function ChatContainer() {
   };
 
   // Broadcast room settings to partner
-  const broadcastRoomSettings = async (mode?: GuidanceMode, paid?: boolean) => {
+  const broadcastRoomSettings = async (mode?: GuidanceMode, paid?: boolean, name?: string) => {
     if (!roomId || !participant) return;
     try {
       await fetch('/api/room/settings', {
@@ -106,6 +132,7 @@ export default function ChatContainer() {
           senderId: participant.id,
           guidanceMode: mode,
           isPaid: paid,
+          fieldName: name,
         }),
       });
     } catch (error) {
@@ -193,6 +220,10 @@ export default function ChatContainer() {
         if (member.info.isPaid) {
           setPartnerIsPaid(true);
         }
+        // Sync messages with the joining partner after a short delay
+        setTimeout(() => {
+          broadcastMessages();
+        }, 500);
       }
     });
 
@@ -236,7 +267,7 @@ export default function ChatContainer() {
     });
 
     // Listen for room settings from partner
-    channel.bind('room-settings', (data: { senderId: string; guidanceMode?: GuidanceMode; isPaid?: boolean }) => {
+    channel.bind('room-settings', (data: { senderId: string; guidanceMode?: GuidanceMode; isPaid?: boolean; fieldName?: string }) => {
       if (data.senderId !== participant.id) {
         // Update guidance mode if partner changed it
         if (data.guidanceMode) {
@@ -247,6 +278,17 @@ export default function ChatContainer() {
         if (typeof data.isPaid === 'boolean') {
           setPartnerIsPaid(data.isPaid);
         }
+        // Update field name if partner has it
+        if (data.fieldName && !fieldName) {
+          setFieldName(data.fieldName);
+        }
+      }
+    });
+
+    // Listen for message sync from partner
+    channel.bind('sync-messages', (data: { senderId: string; messages: Message[] }) => {
+      if (data.senderId !== participant.id && data.messages?.length > 0) {
+        mergeMessages(data.messages);
       }
     });
 
@@ -254,36 +296,47 @@ export default function ChatContainer() {
       channel.unbind_all();
       pusher.unsubscribe(`presence-room-${roomId}`);
     };
-  }, [roomId, participant?.id, participant?.name, participant?.role, pusherPaidStatus, setPartner, addMessage, setTyping, setCounsellorTyping]);
+  }, [roomId, participant?.id, participant?.name, participant?.role, pusherPaidStatus, setPartner, addMessage, mergeMessages, setTyping, setCounsellorTyping]);
 
   // Either partner being premium unlocks features for both
   const userIsPaid = usageData?.tier === 'paid';
   const isPaid = userIsPaid || partnerIsPaid;
 
-  // Broadcast guidance mode when we first join (so partner gets our current mode)
+  // Broadcast room settings when we first join (so partner gets our current mode and field name)
   useEffect(() => {
     if (usageData && roomId && participant && partner?.isOnline && !hasAnnouncedRef.current) {
       hasAnnouncedRef.current = true;
       // Small delay to ensure Pusher connection is established
       const timer = setTimeout(() => {
-        broadcastRoomSettings(guidanceMode, undefined);
+        broadcastRoomSettings(guidanceMode, undefined, fieldName || undefined);
       }, 1000);
       return () => clearTimeout(timer);
     }
-  }, [usageData, roomId, participant?.id, partner?.isOnline]);
+  }, [usageData, roomId, participant?.id, partner?.isOnline, fieldName]);
 
   return (
     <div className="flex flex-col h-screen bg-gray-50">
       {/* Header */}
       <div className="bg-white border-b border-gray-200 px-4 py-3 overflow-visible relative z-10">
         <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-lg font-semibold text-gray-900">
-              Meet In The Field
-            </h1>
-            <p className="text-sm text-gray-500">
-              Field: <span className="font-mono">{roomId}</span>
-            </p>
+          <div className="flex items-center gap-3">
+            <Link
+              href="/"
+              className="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition"
+              title="Back to home"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              </svg>
+            </Link>
+            <div>
+              <h1 className="text-lg font-semibold text-gray-900">
+                {fieldName || 'Meet In The Field'}
+              </h1>
+              <p className="text-sm text-gray-500">
+                Field: <span className="font-mono">{roomId}</span>
+              </p>
+            </div>
           </div>
           <div className="flex items-center gap-4">
             {/* Usage Meter */}
@@ -307,13 +360,15 @@ export default function ChatContainer() {
               </span>
             </div>
 
-            {/* Share Link */}
-            <button
-              onClick={copyShareLink}
-              className="px-3 py-1.5 text-sm bg-gray-100 hover:bg-gray-200 rounded-lg transition"
-            >
-              {copied ? 'Copied!' : 'Share Link'}
-            </button>
+            {/* Share Link - only show when waiting for partner */}
+            {!partner?.isOnline && (
+              <button
+                onClick={copyShareLink}
+                className="px-3 py-1.5 text-sm bg-gray-100 hover:bg-gray-200 rounded-lg transition"
+              >
+                {copied ? 'Copied!' : 'Share Link'}
+              </button>
+            )}
 
             {/* Account Link */}
             <Link

@@ -34,15 +34,18 @@ export function ClerkComponents({ variant, children }: ClerkComponentsProps) {
   }
 
   if (variant === 'main') {
-    // Extract first and second child (RoomCards and FeaturePreview)
+    // Extract children: MyFields, RoomCards, FeaturePreview
     const childArray = Array.isArray(children) ? children : [children];
-    const roomCards = childArray[0];
-    const featurePreview = childArray[1];
+    const myFields = childArray[0];      // MyFields component
+    const roomCards = childArray[1];      // RoomCards component
+    const featurePreview = childArray[2]; // FeaturePreview component
 
     return (
       <>
         <SignedIn>
+          {myFields}
           {roomCards}
+          {featurePreview}
         </SignedIn>
 
         <SignedOut>

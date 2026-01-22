@@ -8,7 +8,7 @@ import ChatContainer from '@/components/ChatContainer';
 export default function RoomPage() {
   const params = useParams();
   const router = useRouter();
-  const { roomId, participant, setRoomId, setMessages, _hasHydrated } = useChatStore();
+  const { roomId, participant, setRoomId, loadRoomMessages, _hasHydrated } = useChatStore();
 
   useEffect(() => {
     if (!_hasHydrated) return;
@@ -21,12 +21,12 @@ export default function RoomPage() {
       return;
     }
 
-    // If joining a different room, clear old messages and update room ID
+    // If joining a different room, load that room's messages and update room ID
     if (urlRoomId && roomId !== urlRoomId) {
-      setMessages([]); // Clear messages from previous room
       setRoomId(urlRoomId);
+      loadRoomMessages(urlRoomId); // Load messages for this specific room
     }
-  }, [_hasHydrated, participant, roomId, params.roomId, router, setRoomId, setMessages]);
+  }, [_hasHydrated, participant, roomId, params.roomId, router, setRoomId, loadRoomMessages]);
 
   // Show loading state while hydrating or checking auth
   if (!_hasHydrated || !participant) {

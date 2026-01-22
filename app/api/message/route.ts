@@ -87,7 +87,7 @@ async function triggerCounsellorResponse(
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { roomId, senderId, senderName, senderRole, content, allMessages, guidanceMode, partnerName } = body;
+    const { roomId, messageId, senderId, senderName, senderRole, content, allMessages, guidanceMode, partnerName } = body;
 
     if (!roomId || !senderId || !senderName || !senderRole || !content) {
       return NextResponse.json(
@@ -97,7 +97,7 @@ export async function POST(request: Request) {
     }
 
     const message: Message = {
-      id: uuidv4(),
+      id: messageId || uuidv4(), // Use client-provided ID if available for consistency
       roomId,
       senderId,
       senderName,

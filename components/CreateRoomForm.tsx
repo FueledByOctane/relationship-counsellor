@@ -6,10 +6,11 @@ import { useChatStore } from '@/stores/chatStore';
 
 export default function CreateRoomForm() {
   const [name, setName] = useState('');
+  const [fieldName, setFieldName] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const router = useRouter();
-  const { setRoomId, setParticipant } = useChatStore();
+  const { setRoomId, setParticipant, setFieldName: setStoreFieldName, clearMessages } = useChatStore();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -22,10 +23,16 @@ export default function CreateRoomForm() {
     setError('');
 
     try {
+      // Clear any existing messages from previous sessions
+      clearMessages();
+
       const response = await fetch('/api/room/create', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: name.trim() }),
+        body: JSON.stringify({
+          name: name.trim(),
+          fieldName: fieldName.trim() || undefined,
+        }),
       });
 
       const data = await response.json();
@@ -36,6 +43,7 @@ export default function CreateRoomForm() {
 
       setRoomId(data.roomId);
       setParticipant(data.participant);
+      setStoreFieldName(data.fieldName || null);
       router.push(`/room/${data.roomId}`);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Something went wrong');
@@ -56,6 +64,21 @@ export default function CreateRoomForm() {
           value={name}
           onChange={(e) => setName(e.target.value)}
           placeholder="Enter your name"
+          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
+          disabled={isLoading}
+        />
+      </div>
+
+      <div>
+        <label htmlFor="field-name" className="block text-sm font-medium text-gray-700 mb-1">
+          Field Name <span className="text-gray-400 font-normal">(optional)</span>
+        </label>
+        <input
+          id="field-name"
+          type="text"
+          value={fieldName}
+          onChange={(e) => setFieldName(e.target.value)}
+          placeholder="e.g., Our Weekly Check-in"
           className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
           disabled={isLoading}
         />
