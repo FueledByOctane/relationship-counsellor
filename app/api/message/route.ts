@@ -116,9 +116,10 @@ export async function POST(request: Request) {
     const partnerAName = senderRole === 'partner-a' ? senderName : partnerName;
     const partnerBName = senderRole === 'partner-b' ? senderName : partnerName;
 
-    // Trigger counsellor response asynchronously (don't await)
+    // Send success response for the message first
+    // Then trigger counsellor response - must await on serverless (Vercel kills the function otherwise)
     const messagesForCounsellor = [...(allMessages || []), message];
-    triggerCounsellorResponse(roomId, messagesForCounsellor, guidanceMode || 'standard', partnerAName, partnerBName);
+    await triggerCounsellorResponse(roomId, messagesForCounsellor, guidanceMode || 'standard', partnerAName, partnerBName);
 
     return NextResponse.json({ success: true, message });
   } catch (error) {
