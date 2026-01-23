@@ -7,24 +7,24 @@ interface TypingIndicatorProps {
 
 export default function TypingIndicator({ name, isCounsellor = false }: TypingIndicatorProps) {
   return (
-    <div className={`flex ${isCounsellor ? 'justify-center' : 'justify-start'} mb-4`}>
-      <div
-        className={`px-4 py-2 rounded-2xl ${
-          isCounsellor
-            ? 'bg-purple-50 border border-purple-200'
-            : 'bg-gray-100'
-        }`}
-      >
-        <div className="flex items-center gap-2">
-          <span className={`text-sm ${isCounsellor ? 'text-purple-600' : 'text-gray-600'}`}>
-            {isCounsellor ? '🧠 ' : ''}{name} is typing
-          </span>
-          <div className="flex gap-1">
-            <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-            <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-            <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
-          </div>
+    <div className={`flex ${isCounsellor ? 'justify-center' : 'justify-start'}`}>
+      <div className="flex items-center gap-2 text-[#6B6560] text-sm">
+        <div className="flex gap-[3px]">
+          <span
+            className="w-1.5 h-1.5 rounded-full bg-[#8B9D83] animate-[typingBounce_1.4s_ease-in-out_infinite]"
+          />
+          <span
+            className="w-1.5 h-1.5 rounded-full bg-[#8B9D83] animate-[typingBounce_1.4s_ease-in-out_infinite]"
+            style={{ animationDelay: '0.2s' }}
+          />
+          <span
+            className="w-1.5 h-1.5 rounded-full bg-[#8B9D83] animate-[typingBounce_1.4s_ease-in-out_infinite]"
+            style={{ animationDelay: '0.4s' }}
+          />
         </div>
+        <span>
+          {isCounsellor ? '🌿 ' : ''}{name} is typing...
+        </span>
       </div>
     </div>
   );

@@ -33,20 +33,20 @@ const faqs: FAQItem[] = [
     question: "What's the difference between Free and Premium?",
     answer: (
       <div>
-        <p className="mb-3"><strong>Free tier</strong> includes:</p>
+        <p className="mb-3"><strong className="text-[#3D3531]">Free tier</strong> includes:</p>
         <ul className="list-disc list-inside mb-3 space-y-1">
           <li>5 AI-guided interactions per week</li>
           <li>Standard guidance mode</li>
           <li>Real-time sessions with your partner</li>
         </ul>
-        <p className="mb-3"><strong>Premium tier ($9.99/month)</strong> includes:</p>
+        <p className="mb-3"><strong className="text-[#3D3531]">Premium tier ($9.99/month)</strong> includes:</p>
         <ul className="list-disc list-inside space-y-1">
           <li>Unlimited AI-guided interactions</li>
           <li>Advanced guidance modes (Conflict Resolution, Intimacy Building, Future Planning)</li>
           <li>Session summary reports</li>
           <li>Priority support</li>
         </ul>
-        <p className="mt-3 text-sm text-gray-500">Note: If either partner has Premium, both partners benefit from Premium features during shared sessions.</p>
+        <p className="mt-3 text-sm text-[#9C8B7A]">Note: If either partner has Premium, both partners benefit from Premium features during shared sessions.</p>
       </div>
     )
   },
@@ -55,10 +55,10 @@ const faqs: FAQItem[] = [
     answer: (
       <div>
         <ul className="space-y-3">
-          <li><strong>Standard:</strong> Balanced, general-purpose guidance for everyday conversations</li>
-          <li><strong>Conflict Resolution:</strong> Specialized support for working through disagreements constructively</li>
-          <li><strong>Intimacy Building:</strong> Focused on deepening emotional connection and vulnerability</li>
-          <li><strong>Future Planning:</strong> Helps align on goals, dreams, and major life decisions</li>
+          <li><strong className="text-[#3D3531]">Standard:</strong> Balanced, general-purpose guidance for everyday conversations</li>
+          <li><strong className="text-[#3D3531]">Conflict Resolution:</strong> Specialized support for working through disagreements constructively</li>
+          <li><strong className="text-[#3D3531]">Intimacy Building:</strong> Focused on deepening emotional connection and vulnerability</li>
+          <li><strong className="text-[#3D3531]">Future Planning:</strong> Helps align on goals, dreams, and major life decisions</li>
         </ul>
       </div>
     )
@@ -99,20 +99,20 @@ const faqs: FAQItem[] = [
 
 function FAQAccordion({ item, isOpen, onToggle }: { item: FAQItem; isOpen: boolean; onToggle: () => void }) {
   return (
-    <div className="border-b border-gray-200 last:border-b-0">
+    <div className="border-b border-[#8B9D83]/15 last:border-b-0">
       <button
         onClick={onToggle}
-        className="w-full py-5 flex items-center justify-between text-left hover:bg-gray-50 transition-colors"
+        className="w-full py-5 flex items-center justify-between text-left hover:bg-[#F7F4EE] transition-colors px-2 -mx-2 rounded-lg"
       >
-        <span className="font-medium text-gray-900 pr-4">{item.question}</span>
-        <span className={`text-gray-400 transition-transform ${isOpen ? 'rotate-180' : ''}`}>
+        <span className="font-medium text-[#3D3531] pr-4">{item.question}</span>
+        <span className={`text-[#8B9D83] transition-transform ${isOpen ? 'rotate-180' : ''}`}>
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
           </svg>
         </span>
       </button>
       {isOpen && (
-        <div className="pb-5 text-gray-600 leading-relaxed">
+        <div className="pb-5 text-[#6B6560] leading-relaxed">
           {item.answer}
         </div>
       )}
@@ -124,31 +124,43 @@ export default function FAQPage() {
   const [openIndex, setOpenIndex] = useState<number | null>(0);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50">
+    <div className="min-h-screen bg-[#F7F4EE]">
+      {/* Texture overlay */}
+      <div className="texture-overlay" />
+
       {/* Header */}
-      <header className="px-6 py-4 border-b border-gray-200 bg-white/80 backdrop-blur-sm">
+      <header className="px-6 py-4 border-b border-[#8B9D83]/15 bg-[#FFFCF7]/80 backdrop-blur-sm relative z-10">
         <div className="max-w-4xl mx-auto flex items-center justify-between">
-          <Link href="/" className="text-xl font-semibold text-gray-900 hover:text-gray-700">
+          <Link
+            href="/"
+            className="text-xl font-medium text-[#3D3531] hover:text-[#5C6B56] transition-colors"
+            style={{ fontFamily: 'var(--font-cormorant), Cormorant Garamond, serif' }}
+          >
             Meet In The Field
           </Link>
           <nav className="flex items-center gap-6">
-            <Link href="/about" className="text-sm text-gray-600 hover:text-gray-900">About</Link>
-            <Link href="/faq" className="text-sm text-blue-600 font-medium">FAQ</Link>
-            <Link href="/privacy" className="text-sm text-gray-600 hover:text-gray-900">Privacy</Link>
-            <Link href="/terms" className="text-sm text-gray-600 hover:text-gray-900">Terms</Link>
+            <Link href="/about" className="text-sm text-[#6B6560] hover:text-[#5C6B56] nav-link">About</Link>
+            <Link href="/faq" className="text-sm text-[#5C6B56] font-medium nav-link">FAQ</Link>
+            <Link href="/privacy" className="text-sm text-[#6B6560] hover:text-[#5C6B56] nav-link">Privacy</Link>
+            <Link href="/terms" className="text-sm text-[#6B6560] hover:text-[#5C6B56] nav-link">Terms</Link>
           </nav>
         </div>
       </header>
 
       {/* Content */}
-      <main className="max-w-3xl mx-auto px-6 py-12">
-        <h1 className="text-4xl font-bold text-gray-900 mb-4">Frequently Asked Questions</h1>
-        <p className="text-lg text-gray-600 mb-8">
+      <main className="max-w-3xl mx-auto px-6 py-12 relative z-[1]">
+        <h1
+          className="text-4xl font-bold text-[#3D3531] mb-4"
+          style={{ fontFamily: 'var(--font-cormorant), Cormorant Garamond, serif' }}
+        >
+          Frequently Asked Questions
+        </h1>
+        <p className="text-lg text-[#6B6560] mb-8">
           Find answers to common questions about Meet In The Field. Can't find what you're looking for?
-          Contact us at <a href="mailto:support@meetinthefield.app" className="text-blue-600 hover:underline">support@meetinthefield.app</a>
+          Contact us at <a href="mailto:support@meetinthefield.app" className="text-[#8B9D83] hover:text-[#5C6B56] underline">support@meetinthefield.app</a>
         </p>
 
-        <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
+        <div className="bg-[#FFFCF7] rounded-2xl shadow-sm overflow-hidden border border-[#8B9D83]/15">
           <div className="px-6">
             {faqs.map((faq, index) => (
               <FAQAccordion
@@ -162,14 +174,19 @@ export default function FAQPage() {
         </div>
 
         {/* Contact Section */}
-        <div className="mt-12 bg-white rounded-2xl shadow-sm p-8 text-center">
-          <h2 className="text-xl font-semibold text-gray-900 mb-3">Still have questions?</h2>
-          <p className="text-gray-600 mb-4">
+        <div className="mt-12 bg-[#FFFCF7] rounded-2xl shadow-sm p-8 text-center border border-[#8B9D83]/15">
+          <h2
+            className="text-xl font-semibold text-[#3D3531] mb-3"
+            style={{ fontFamily: 'var(--font-cormorant), Cormorant Garamond, serif' }}
+          >
+            Still have questions?
+          </h2>
+          <p className="text-[#6B6560] mb-4">
             We're here to help. Reach out to our support team and we'll get back to you as soon as possible.
           </p>
           <a
             href="mailto:support@meetinthefield.app"
-            className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors"
+            className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-br from-[#8B9D83] to-[#5C6B56] text-white font-medium rounded-[20px] hover:from-[#7A8E75] hover:to-[#4D5C48] transition-all shadow-[0_4px_15px_-3px_rgba(92,107,86,0.4)]"
           >
             Contact Support
           </a>
@@ -179,7 +196,7 @@ export default function FAQPage() {
         <div className="mt-12 text-center">
           <Link
             href="/"
-            className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-700 font-medium"
+            className="inline-flex items-center gap-2 text-[#8B9D83] hover:text-[#5C6B56] font-medium transition-colors"
           >
             <span>&larr;</span> Back to Home
           </Link>
@@ -187,17 +204,17 @@ export default function FAQPage() {
       </main>
 
       {/* Footer */}
-      <footer className="border-t border-gray-200 bg-white/80 backdrop-blur-sm mt-12">
+      <footer className="border-t border-[#8B9D83]/15 bg-[#FFFCF7]/80 backdrop-blur-sm mt-12 relative z-10">
         <div className="max-w-4xl mx-auto px-6 py-8">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-[#6B6560]">
               &copy; {new Date().getFullYear()} Octane Limited. All rights reserved.
             </p>
             <nav className="flex items-center gap-6">
-              <Link href="/about" className="text-sm text-gray-500 hover:text-gray-700">About</Link>
-              <Link href="/faq" className="text-sm text-gray-500 hover:text-gray-700">FAQ</Link>
-              <Link href="/privacy" className="text-sm text-gray-500 hover:text-gray-700">Privacy</Link>
-              <Link href="/terms" className="text-sm text-gray-500 hover:text-gray-700">Terms</Link>
+              <Link href="/about" className="text-sm text-[#6B6560] hover:text-[#5C6B56]">About</Link>
+              <Link href="/faq" className="text-sm text-[#6B6560] hover:text-[#5C6B56]">FAQ</Link>
+              <Link href="/privacy" className="text-sm text-[#6B6560] hover:text-[#5C6B56]">Privacy</Link>
+              <Link href="/terms" className="text-sm text-[#6B6560] hover:text-[#5C6B56]">Terms</Link>
             </nav>
           </div>
         </div>

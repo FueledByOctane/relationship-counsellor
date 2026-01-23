@@ -52,7 +52,7 @@ export default function SessionSummary({ messages, isPaid, roomId, onUpgradeClic
       <button
         onClick={handleGenerateSummary}
         disabled={isLoading}
-        className="flex items-center gap-2 px-3 py-1.5 text-sm bg-amber-50 hover:bg-amber-100 text-amber-700 rounded-lg transition disabled:opacity-50"
+        className="flex items-center gap-2 px-3 py-1.5 text-sm bg-[#E8EDE5] hover:bg-[#C4D1BE] text-[#5C6B56] rounded-[20px] transition disabled:opacity-50"
         title={isPaid ? 'Generate session summary' : 'Upgrade to generate summaries'}
       >
         {isLoading ? (
@@ -67,7 +67,7 @@ export default function SessionSummary({ messages, isPaid, roomId, onUpgradeClic
         )}
         <span>Summary</span>
         {!isPaid && (
-          <span className="text-xs bg-amber-200 text-amber-800 px-1.5 py-0.5 rounded-full">Paid</span>
+          <span className="text-xs bg-[#C4A484]/20 text-[#9C8B7A] px-1.5 py-0.5 rounded-full">Premium</span>
         )}
       </button>
 
@@ -78,12 +78,12 @@ export default function SessionSummary({ messages, isPaid, roomId, onUpgradeClic
             className="absolute inset-0 bg-black/50 backdrop-blur-sm"
             onClick={() => setIsOpen(false)}
           />
-          <div className="relative bg-white rounded-2xl shadow-xl max-w-2xl w-full max-h-[80vh] overflow-hidden">
-            <div className="flex items-center justify-between p-4 border-b">
-              <h2 className="text-lg font-semibold text-gray-900">Session Summary</h2>
+          <div className="relative bg-[#FFFCF7] rounded-2xl shadow-xl max-w-2xl w-full max-h-[80vh] overflow-hidden border border-[#8B9D83]/20">
+            <div className="flex items-center justify-between p-4 border-b border-[#8B9D83]/15">
+              <h2 className="text-lg font-semibold text-[#3D3531]" style={{ fontFamily: 'var(--font-cormorant), Cormorant Garamond, serif' }}>Session Summary</h2>
               <button
                 onClick={() => setIsOpen(false)}
-                className="text-gray-400 hover:text-gray-600"
+                className="text-[#6B6560] hover:text-[#3D3531]"
               >
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -91,30 +91,30 @@ export default function SessionSummary({ messages, isPaid, roomId, onUpgradeClic
               </button>
             </div>
             <div className="p-6 overflow-y-auto max-h-[60vh]">
-              <div className="prose prose-sm max-w-none">
+              <div className="prose prose-sm max-w-none text-[#2C2926]">
                 {summary.split('\n').map((paragraph, index) => {
                   if (paragraph.startsWith('## ')) {
-                    return <h3 key={index} className="text-lg font-semibold mt-4 mb-2">{paragraph.replace('## ', '')}</h3>;
+                    return <h3 key={index} className="text-lg font-semibold mt-4 mb-2 text-[#3D3531]" style={{ fontFamily: 'var(--font-cormorant), Cormorant Garamond, serif' }}>{paragraph.replace('## ', '')}</h3>;
                   }
                   if (paragraph.startsWith('**') && paragraph.endsWith('**')) {
-                    return <h4 key={index} className="font-semibold mt-3 mb-1">{paragraph.replace(/\*\*/g, '')}</h4>;
+                    return <h4 key={index} className="font-semibold mt-3 mb-1 text-[#5C6B56]">{paragraph.replace(/\*\*/g, '')}</h4>;
                   }
                   if (paragraph.startsWith('- ')) {
-                    return <li key={index} className="ml-4">{paragraph.replace('- ', '')}</li>;
+                    return <li key={index} className="ml-4 text-[#6B6560]">{paragraph.replace('- ', '')}</li>;
                   }
                   if (paragraph.trim()) {
-                    return <p key={index} className="mb-2">{paragraph}</p>;
+                    return <p key={index} className="mb-2 text-[#6B6560]">{paragraph}</p>;
                   }
                   return null;
                 })}
               </div>
             </div>
-            <div className="p-4 border-t bg-gray-50">
+            <div className="p-4 border-t border-[#8B9D83]/15 bg-[#F7F4EE]">
               <button
                 onClick={() => {
                   navigator.clipboard.writeText(summary);
                 }}
-                className="px-4 py-2 text-sm bg-gray-100 hover:bg-gray-200 rounded-lg transition"
+                className="px-4 py-2 text-sm bg-[#E8EDE5] hover:bg-[#C4D1BE] text-[#5C6B56] rounded-[20px] transition"
               >
                 Copy to Clipboard
               </button>

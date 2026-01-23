@@ -341,47 +341,57 @@ export default function ChatContainer() {
   }, [usageData, roomId, participant?.id, partner?.isOnline, fieldName]);
 
   return (
-    <div className="flex flex-col h-screen bg-gray-50">
+    <div className="flex flex-col h-screen bg-[#F7F4EE] overflow-hidden">
+      {/* Subtle texture overlay */}
+      <div className="texture-overlay" />
+
       {/* Header */}
-      <div className="bg-white border-b border-gray-200 px-4 py-3 overflow-visible relative z-10">
+      <header className="bg-[#FFFCF7] border-b border-[#8B9D83]/15 px-4 md:px-6 py-4 relative z-10">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
+          {/* Left: Back button and session info */}
+          <div className="flex items-center gap-4">
             <Link
               href="/"
-              className="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition"
+              className="w-9 h-9 rounded-full bg-[#E8EDE5] hover:bg-[#C4D1BE] flex items-center justify-center transition-all hover:-translate-x-0.5"
               title="Back to home"
             >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              <svg className="w-[18px] h-[18px] stroke-[#5C6B56] stroke-2 fill-none" viewBox="0 0 24 24">
+                <polyline points="15 18 9 12 15 6" />
               </svg>
             </Link>
             <div>
-              <h1 className="text-lg font-semibold text-gray-900">
+              <h1
+                className="text-xl font-medium text-[#3D3531] leading-tight"
+                style={{ fontFamily: 'var(--font-cormorant), Cormorant Garamond, serif' }}
+              >
                 {fieldName || 'Meet In The Field'}
               </h1>
-              <p className="text-sm text-gray-500">
-                Field: <span className="font-mono">{roomId}</span>
+              <p className="text-xs text-[#6B6560] tracking-wide mt-0.5">
+                Field: <span className="font-mono bg-[#E8EDE5] text-[#5C6B56] px-2 py-0.5 rounded">{roomId}</span>
               </p>
             </div>
           </div>
-          <div className="flex items-center gap-4">
-            {/* Usage Meter */}
-            {usageData && (
-              <UsageMeter
-                currentUsage={usageData.weeklyUsageCount}
-                limit={usageData.weeklyLimit || 5}
-                isPaid={isPaid}
-              />
-            )}
 
+          {/* Center: Guidance mode (hidden on mobile) */}
+          <div className="hidden lg:block absolute left-1/2 -translate-x-1/2">
+            <GuidanceModeSelector
+              selectedMode={guidanceMode}
+              onModeChange={handleModeChange}
+              isPaid={isPaid}
+              onUpgradeClick={() => handleUpgradeClick('feature-locked')}
+            />
+          </div>
+
+          {/* Right: Status and actions */}
+          <div className="flex items-center gap-3 md:gap-4">
             {/* Partner Status */}
-            <div className="flex items-center gap-2">
-              <div
+            <div className="flex items-center gap-2 text-sm text-[#6B6560]">
+              <span
                 className={`w-2 h-2 rounded-full ${
-                  partner?.isOnline ? 'bg-green-500' : 'bg-gray-300'
+                  partner?.isOnline ? 'bg-[#8B9D83]' : 'bg-[#C4A484] animate-pulse'
                 }`}
               />
-              <span className="text-sm text-gray-600">
+              <span className="hidden sm:inline">
                 {partner ? (partner.isOnline ? partner.name : `${partner.name} (offline)`) : 'Waiting for partner...'}
               </span>
             </div>
@@ -390,42 +400,35 @@ export default function ChatContainer() {
             {!partner?.isOnline && (
               <button
                 onClick={copyShareLink}
-                className="px-3 py-1.5 text-sm bg-gray-100 hover:bg-gray-200 rounded-lg transition"
+                className="px-4 py-2 text-xs font-medium uppercase tracking-wide bg-[#8B9D83] text-white rounded-[20px] hover:bg-[#5C6B56] transition-all hover:-translate-y-0.5"
               >
                 {copied ? 'Copied!' : 'Share Link'}
               </button>
             )}
 
-            {/* Account Link */}
-            <Link
-              href="/account"
-              className="text-sm text-gray-600 hover:text-gray-900"
-            >
-              Account
-            </Link>
+            {/* Session Summary */}
+            <SessionSummary
+              messages={messages}
+              isPaid={isPaid}
+              roomId={roomId || ''}
+              onUpgradeClick={() => handleUpgradeClick('feature-locked')}
+            />
 
             {/* User Button */}
             <UserButton afterSignOutUrl="/" />
           </div>
         </div>
 
-        {/* Secondary toolbar */}
-        <div className="flex items-center justify-between mt-3 pt-3 border-t border-gray-100">
+        {/* Mobile guidance mode */}
+        <div className="lg:hidden mt-3 pt-3 border-t border-[#8B9D83]/10">
           <GuidanceModeSelector
             selectedMode={guidanceMode}
             onModeChange={handleModeChange}
             isPaid={isPaid}
             onUpgradeClick={() => handleUpgradeClick('feature-locked')}
           />
-
-          <SessionSummary
-            messages={messages}
-            isPaid={isPaid}
-            roomId={roomId || ''}
-            onUpgradeClick={() => handleUpgradeClick('feature-locked')}
-          />
         </div>
-      </div>
+      </header>
 
       {/* Messages */}
       <MessageList />
