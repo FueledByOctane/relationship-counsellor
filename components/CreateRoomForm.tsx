@@ -64,7 +64,7 @@ export default function CreateRoomForm() {
           value={name}
           onChange={(e) => setName(e.target.value)}
           placeholder="Enter your name"
-          className="w-full px-4 py-3 bg-[#F7F4EE] border border-[#8B9D83]/20 rounded-xl focus:ring-2 focus:ring-[#8B9D83]/50 focus:border-[#8B9D83] outline-none transition text-[#2C2926] placeholder:text-[#6B6560]/50"
+          className="w-full px-4 py-3 bg-white border border-[#8B9D83]/30 rounded-xl focus:ring-2 focus:ring-[#8B9D83]/50 focus:border-[#8B9D83] outline-none transition text-[#2C2926] placeholder:text-[#6B6560]/60"
           disabled={isLoading}
         />
       </div>
@@ -79,7 +79,7 @@ export default function CreateRoomForm() {
           value={fieldName}
           onChange={(e) => setFieldName(e.target.value)}
           placeholder="e.g., Our Weekly Check-in"
-          className="w-full px-4 py-3 bg-[#F7F4EE] border border-[#8B9D83]/20 rounded-xl focus:ring-2 focus:ring-[#8B9D83]/50 focus:border-[#8B9D83] outline-none transition text-[#2C2926] placeholder:text-[#6B6560]/50"
+          className="w-full px-4 py-3 bg-white border border-[#8B9D83]/30 rounded-xl focus:ring-2 focus:ring-[#8B9D83]/50 focus:border-[#8B9D83] outline-none transition text-[#2C2926] placeholder:text-[#6B6560]/60"
           disabled={isLoading}
         />
       </div>

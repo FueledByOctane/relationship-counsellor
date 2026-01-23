@@ -19,16 +19,16 @@ export default function FieldIllustration() {
         />
 
         {/* Two figures - positioned above grass */}
-        <div className="absolute bottom-[38%] left-1/2 -translate-x-1/2 flex gap-5 z-10">
+        <div className="absolute bottom-[42%] left-1/2 -translate-x-1/2 flex gap-6 z-10">
           {/* Figure 1 */}
           <div className="flex flex-col items-center">
-            <div className="w-[12px] h-[12px] bg-[#F7F4EE] rounded-full mb-[2px]" />
-            <div className="w-[6px] h-[28px] bg-[#F7F4EE] rounded-[3px]" />
+            <div className="w-[14px] h-[14px] bg-[#F7F4EE] rounded-full mb-[3px]" />
+            <div className="w-[7px] h-[32px] bg-[#F7F4EE] rounded-[3px]" />
           </div>
           {/* Figure 2 */}
           <div className="flex flex-col items-center">
-            <div className="w-[12px] h-[12px] bg-[#F7F4EE] rounded-full mb-[2px]" />
-            <div className="w-[6px] h-[28px] bg-[#F7F4EE] rounded-[3px]" />
+            <div className="w-[14px] h-[14px] bg-[#F7F4EE] rounded-full mb-[3px]" />
+            <div className="w-[7px] h-[32px] bg-[#F7F4EE] rounded-[3px]" />
           </div>
         </div>
 
