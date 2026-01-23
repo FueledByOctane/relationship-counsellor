@@ -18,6 +18,20 @@ export default function FieldIllustration() {
           }}
         />
 
+        {/* Two figures - positioned above grass */}
+        <div className="absolute bottom-[38%] left-1/2 -translate-x-1/2 flex gap-5 z-10">
+          {/* Figure 1 */}
+          <div className="flex flex-col items-center">
+            <div className="w-[12px] h-[12px] bg-[#F7F4EE] rounded-full mb-[2px]" />
+            <div className="w-[6px] h-[28px] bg-[#F7F4EE] rounded-[3px]" />
+          </div>
+          {/* Figure 2 */}
+          <div className="flex flex-col items-center">
+            <div className="w-[12px] h-[12px] bg-[#F7F4EE] rounded-full mb-[2px]" />
+            <div className="w-[6px] h-[28px] bg-[#F7F4EE] rounded-[3px]" />
+          </div>
+        </div>
+
         {/* Grass blades */}
         <div className="absolute bottom-[20%] left-1/2 -translate-x-1/2 flex gap-2 items-end">
           <div className="grass w-[3px] h-[40px] rounded-sm" style={{ background: 'linear-gradient(to top, #5C6B56, #F7F4EE)' }} />
@@ -27,22 +41,6 @@ export default function FieldIllustration() {
           <div className="grass w-[3px] h-[60px] rounded-sm" style={{ background: 'linear-gradient(to top, #5C6B56, #F7F4EE)' }} />
           <div className="grass w-[3px] h-[50px] rounded-sm" style={{ background: 'linear-gradient(to top, #5C6B56, #F7F4EE)' }} />
           <div className="grass w-[3px] h-[45px] rounded-sm" style={{ background: 'linear-gradient(to top, #5C6B56, #F7F4EE)' }} />
-        </div>
-
-        {/* Two figures */}
-        <div className="absolute bottom-[35%] left-1/2 -translate-x-1/2 flex gap-5">
-          <div className="relative">
-            {/* Head */}
-            <div className="absolute -top-[10px] left-1/2 -translate-x-1/2 w-[10px] h-[10px] bg-[#F7F4EE] rounded-full opacity-90" />
-            {/* Body */}
-            <div className="w-[6px] h-[24px] bg-[#F7F4EE] rounded-[3px] opacity-90" />
-          </div>
-          <div className="relative">
-            {/* Head */}
-            <div className="absolute -top-[10px] left-1/2 -translate-x-1/2 w-[10px] h-[10px] bg-[#F7F4EE] rounded-full opacity-90" />
-            {/* Body */}
-            <div className="w-[6px] h-[24px] bg-[#F7F4EE] rounded-[3px] opacity-90" />
-          </div>
         </div>
       </div>
     </div>
