@@ -107,11 +107,11 @@ export default function MyFields() {
 
   if (isLoading) {
     return (
-      <div className="animate-pulse">
-        <div className="h-6 bg-gray-200 rounded w-32 mb-4"></div>
+      <div className="animate-pulse mb-10">
+        <div className="h-6 bg-[#C4D1BE]/30 rounded w-32 mb-4"></div>
         <div className="space-y-3">
-          <div className="h-20 bg-gray-100 rounded-lg"></div>
-          <div className="h-20 bg-gray-100 rounded-lg"></div>
+          <div className="h-20 bg-[#C4D1BE]/20 rounded-xl"></div>
+          <div className="h-20 bg-[#C4D1BE]/20 rounded-xl"></div>
         </div>
       </div>
     );
@@ -122,47 +122,52 @@ export default function MyFields() {
   }
 
   return (
-    <div className="mb-8">
-      <h2 className="text-lg font-semibold text-gray-900 mb-4">Your Fields</h2>
+    <div className="mb-10">
+      <h2
+        className="text-xl font-medium text-[#3D3531] mb-5"
+        style={{ fontFamily: 'var(--font-cormorant), Cormorant Garamond, serif' }}
+      >
+        Your Fields
+      </h2>
       <div className="space-y-3">
         {fields.map((field) => (
           <div
             key={field.id}
-            className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 hover:shadow-md transition-shadow"
+            className="bg-[#FFFCF7] rounded-2xl border border-[#8B9D83]/10 p-5 hover:shadow-[0_10px_30px_-10px_rgba(92,107,86,0.15)] transition-all"
           >
             <div className="flex items-center justify-between">
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2">
-                  <h3 className="font-medium text-gray-900 truncate">
+                  <h3 className="font-medium text-[#3D3531] truncate">
                     {field.name || `Field ${field.code}`}
                   </h3>
-                  <span className="text-xs font-mono text-gray-500 bg-gray-100 px-2 py-0.5 rounded">
+                  <span className="text-xs font-mono text-[#6B6560] bg-[#F7F4EE] px-2 py-0.5 rounded-md">
                     {field.code}
                   </span>
                 </div>
-                <div className="flex items-center gap-3 mt-1 text-sm text-gray-500">
+                <div className="flex items-center gap-3 mt-1.5 text-sm text-[#6B6560]">
                   <span>
                     {field.partnerName ? (
-                      <>with <span className="text-gray-700">{field.partnerName}</span></>
+                      <>with <span className="text-[#3D3531]">{field.partnerName}</span></>
                     ) : (
-                      <span className="text-amber-600">Waiting for partner</span>
+                      <span className="text-[#C4A484]">Waiting for partner</span>
                     )}
                   </span>
-                  <span className="text-gray-300">|</span>
+                  <span className="text-[#C4D1BE]">|</span>
                   <span>Last active {formatDate(field.lastActivityAt)}</span>
                 </div>
               </div>
               <div className="flex items-center gap-2 ml-4">
                 <button
                   onClick={() => handleRejoin(field)}
-                  className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors"
+                  className="px-4 py-2 bg-gradient-to-r from-[#8B9D83] to-[#5C6B56] text-white text-sm font-medium rounded-xl hover:from-[#7A8C74] hover:to-[#4B5A47] transition-all"
                 >
                   Rejoin
                 </button>
                 <button
                   onClick={() => handleDelete(field.id)}
                   disabled={deletingId === field.id}
-                  className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-50"
+                  className="p-2 text-[#6B6560] hover:text-red-500 hover:bg-red-50 rounded-xl transition-colors disabled:opacity-50"
                   title="Delete field"
                 >
                   {deletingId === field.id ? (

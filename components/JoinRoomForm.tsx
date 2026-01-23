@@ -70,7 +70,7 @@ export default function JoinRoomForm() {
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div>
-        <label htmlFor="join-name" className="block text-sm font-medium text-gray-700 mb-1">
+        <label htmlFor="join-name" className="block text-sm font-medium text-[#3D3531] mb-1.5">
           Your Name
         </label>
         <input
@@ -79,13 +79,13 @@ export default function JoinRoomForm() {
           value={name}
           onChange={(e) => setName(e.target.value)}
           placeholder="Enter your name"
-          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition"
+          className="w-full px-4 py-3 bg-[#F7F4EE] border border-[#8B9D83]/20 rounded-xl focus:ring-2 focus:ring-[#8B9D83]/50 focus:border-[#8B9D83] outline-none transition text-[#2C2926] placeholder:text-[#6B6560]/50"
           disabled={isLoading}
         />
       </div>
 
       <div>
-        <label htmlFor="field-code" className="block text-sm font-medium text-gray-700 mb-1">
+        <label htmlFor="field-code" className="block text-sm font-medium text-[#3D3531] mb-1.5">
           Field Code
         </label>
         <input
@@ -95,21 +95,29 @@ export default function JoinRoomForm() {
           onChange={(e) => setRoomCode(e.target.value.toUpperCase())}
           placeholder="Enter 6-character code"
           maxLength={6}
-          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition uppercase tracking-widest text-center font-mono"
+          className="w-full px-4 py-3 bg-[#F7F4EE] border border-[#8B9D83]/20 rounded-xl focus:ring-2 focus:ring-[#8B9D83]/50 focus:border-[#8B9D83] outline-none transition text-[#2C2926] placeholder:text-[#6B6560]/50 uppercase tracking-widest text-center font-mono"
           disabled={isLoading}
         />
       </div>
 
       {error && (
-        <p className="text-red-500 text-sm">{error}</p>
+        <p className="text-red-600 text-sm">{error}</p>
       )}
 
       <button
         type="submit"
         disabled={isLoading}
-        className="w-full py-2 px-4 bg-green-600 text-white font-medium rounded-lg hover:bg-green-700 focus:ring-2 focus:ring-green-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition"
+        className="w-full py-3 px-4 bg-gradient-to-r from-[#8B9D83] to-[#5C6B56] text-white font-medium rounded-xl hover:from-[#7A8C74] hover:to-[#4B5A47] focus:ring-2 focus:ring-[#8B9D83]/50 focus:ring-offset-2 focus:ring-offset-[#FFFCF7] disabled:opacity-50 disabled:cursor-not-allowed transition-all inline-flex items-center justify-center gap-2"
       >
-        {isLoading ? 'Joining...' : 'Join Field'}
+        {isLoading ? 'Joining...' : (
+          <>
+            Enter Field
+            <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <line x1="5" y1="12" x2="19" y2="12"/>
+              <polyline points="12 5 19 12 12 19"/>
+            </svg>
+          </>
+        )}
       </button>
     </form>
   );
