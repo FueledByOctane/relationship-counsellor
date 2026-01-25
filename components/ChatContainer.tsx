@@ -414,6 +414,19 @@ export default function ChatContainer() {
               onUpgradeClick={() => handleUpgradeClick('feature-locked')}
             />
 
+            {/* Support Link */}
+            <Link
+              href="/support"
+              className="w-9 h-9 rounded-full bg-[#E8EDE5] hover:bg-[#C4D1BE] flex items-center justify-center transition-all"
+              title="Get support"
+            >
+              <svg className="w-[18px] h-[18px] stroke-[#5C6B56] stroke-2 fill-none" viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="10" />
+                <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
+                <line x1="12" y1="17" x2="12.01" y2="17" />
+              </svg>
+            </Link>
+
             {/* User Button */}
             <UserButton afterSignOutUrl="/" />
           </div>

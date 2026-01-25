@@ -194,6 +194,7 @@ export default function SupportPage() {
               <Link href="/faq" className="text-sm text-[#6B6560] hover:text-[#5C6B56]">FAQ</Link>
               <Link href="/privacy" className="text-sm text-[#6B6560] hover:text-[#5C6B56]">Privacy</Link>
               <Link href="/terms" className="text-sm text-[#6B6560] hover:text-[#5C6B56]">Terms</Link>
+              <Link href="/support" className="text-sm text-[#6B6560] hover:text-[#5C6B56]">Support</Link>
             </nav>
           </div>
         </div>

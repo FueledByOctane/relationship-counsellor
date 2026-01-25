@@ -173,6 +173,9 @@ function HomeContent() {
             <Link href="/privacy" className="nav-link text-xs uppercase tracking-[0.05em] text-[#6B6560] hover:text-[#5C6B56] transition-colors">
               Privacy
             </Link>
+            <Link href="/support" className="nav-link text-xs uppercase tracking-[0.05em] text-[#6B6560] hover:text-[#5C6B56] transition-colors">
+              Support
+            </Link>
           </div>
           {mounted && <ClerkComponents variant="header" />}
         </div>
@@ -330,6 +333,9 @@ function HomeContent() {
           </Link>
           <Link href="/terms" className="text-xs uppercase tracking-[0.05em] text-[#6B6560] hover:text-[#5C6B56] transition-colors">
             Terms
+          </Link>
+          <Link href="/support" className="text-xs uppercase tracking-[0.05em] text-[#6B6560] hover:text-[#5C6B56] transition-colors">
+            Support
           </Link>
         </div>
         <p className="text-xs text-[#9C8B7A] tracking-wide">

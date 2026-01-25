@@ -22,7 +22,7 @@ export default function TermsPage() {
             <Link href="/about" className="text-sm text-[#6B6560] hover:text-[#5C6B56] nav-link">About</Link>
             <Link href="/faq" className="text-sm text-[#6B6560] hover:text-[#5C6B56] nav-link">FAQ</Link>
             <Link href="/privacy" className="text-sm text-[#6B6560] hover:text-[#5C6B56] nav-link">Privacy</Link>
-            <Link href="/terms" className="text-sm text-[#5C6B56] font-medium nav-link">Terms</Link>
+            <Link href="/support" className="text-sm text-[#6B6560] hover:text-[#5C6B56] nav-link">Support</Link>
           </nav>
         </div>
       </header>
@@ -308,6 +308,7 @@ export default function TermsPage() {
               <Link href="/faq" className="text-sm text-[#6B6560] hover:text-[#5C6B56]">FAQ</Link>
               <Link href="/privacy" className="text-sm text-[#6B6560] hover:text-[#5C6B56]">Privacy</Link>
               <Link href="/terms" className="text-sm text-[#6B6560] hover:text-[#5C6B56]">Terms</Link>
+              <Link href="/support" className="text-sm text-[#6B6560] hover:text-[#5C6B56]">Support</Link>
             </nav>
           </div>
         </div>
