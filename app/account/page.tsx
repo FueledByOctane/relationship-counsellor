@@ -18,9 +18,15 @@ function AccountContent() {
   const [subscription, setSubscription] = useState<SubscriptionData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
+  const [isUK, setIsUK] = useState(false);
 
   const success = searchParams.get('success');
   const canceled = searchParams.get('canceled');
+
+  useEffect(() => {
+    const browserLocale = navigator.language;
+    setIsUK(browserLocale === 'en-GB');
+  }, []);
 
   useEffect(() => {
     fetchSubscription();
@@ -269,7 +275,7 @@ function AccountContent() {
             </ul>
 
             <div className="flex items-baseline gap-2 mb-4">
-              <span className="text-3xl font-bold text-[#3D3531]">$9.99</span>
+              <span className="text-3xl font-bold text-[#3D3531]">{isUK ? '£9.99' : '$9.99'}</span>
               <span className="text-[#6B6560]">/month</span>
             </div>
 

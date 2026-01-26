@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 interface UpgradePromptProps {
   isOpen: boolean;
@@ -10,6 +10,12 @@ interface UpgradePromptProps {
 
 export default function UpgradePrompt({ isOpen, onClose, reason = 'general' }: UpgradePromptProps) {
   const [isLoading, setIsLoading] = useState(false);
+  const [isUK, setIsUK] = useState(false);
+
+  useEffect(() => {
+    const browserLocale = navigator.language;
+    setIsUK(browserLocale === 'en-GB');
+  }, []);
 
   if (!isOpen) return null;
 
@@ -84,7 +90,7 @@ export default function UpgradePrompt({ isOpen, onClose, reason = 'general' }: U
 
         <div className="bg-gradient-to-br from-[#E8EDE5] to-[#F7F4EE] rounded-xl p-4 mb-6 border border-[#C4D1BE]">
           <div className="flex items-baseline justify-center mb-4">
-            <span className="text-3xl font-bold text-[#3D3531]">$9.99</span>
+            <span className="text-3xl font-bold text-[#3D3531]">{isUK ? '£9.99' : '$9.99'}</span>
             <span className="text-[#6B6560] ml-1">/month</span>
           </div>
 
