@@ -264,10 +264,45 @@ export default function StartFreeTrial() {
       </section>
 
       {/* Footer */}
-      <footer className="px-4 md:px-8 py-8 text-center relative z-10 border-t border-[#8B9D83]/15 mt-8">
-        <p className="text-xs text-[#9C8B7A]">
-          &copy; {new Date().getFullYear()} Octane Limited. All rights reserved.
-        </p>
+      <footer className="px-4 md:px-8 py-12 relative z-10 border-t border-[#8B9D83]/15 mt-8">
+        <div className="max-w-4xl mx-auto">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-8">
+            <div>
+              <h4 className="text-sm font-medium text-[#3D3531] mb-4">Product</h4>
+              <ul className="space-y-2">
+                <li><Link href="/start-free-trial" className="text-sm text-[#6B6560] hover:text-[#5C6B56] transition-colors">Start Free Trial</Link></li>
+                <li><Link href="/how-it-works" className="text-sm text-[#6B6560] hover:text-[#5C6B56] transition-colors">How It Works</Link></li>
+                <li><Link href="/faq" className="text-sm text-[#6B6560] hover:text-[#5C6B56] transition-colors">FAQ</Link></li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="text-sm font-medium text-[#3D3531] mb-4">Company</h4>
+              <ul className="space-y-2">
+                <li><Link href="/about" className="text-sm text-[#6B6560] hover:text-[#5C6B56] transition-colors">About</Link></li>
+                <li><Link href="/support" className="text-sm text-[#6B6560] hover:text-[#5C6B56] transition-colors">Support</Link></li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="text-sm font-medium text-[#3D3531] mb-4">Legal</h4>
+              <ul className="space-y-2">
+                <li><Link href="/privacy" className="text-sm text-[#6B6560] hover:text-[#5C6B56] transition-colors">Privacy Policy</Link></li>
+                <li><Link href="/terms" className="text-sm text-[#6B6560] hover:text-[#5C6B56] transition-colors">Terms of Service</Link></li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="text-sm font-medium text-[#3D3531] mb-4">Get Started</h4>
+              <ul className="space-y-2">
+                <li><Link href="/sign-in" className="text-sm text-[#6B6560] hover:text-[#5C6B56] transition-colors">Sign In</Link></li>
+                <li><Link href="/start-free-trial" className="text-sm text-[#6B6560] hover:text-[#5C6B56] transition-colors">Create Account</Link></li>
+              </ul>
+            </div>
+          </div>
+          <div className="pt-8 border-t border-[#8B9D83]/10 text-center">
+            <p className="text-xs text-[#9C8B7A]">
+              &copy; {new Date().getFullYear()} Octane Limited. All rights reserved.
+            </p>
+          </div>
+        </div>
       </footer>
     </div>
   );
