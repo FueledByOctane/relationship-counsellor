@@ -342,6 +342,9 @@ function HomeContent() {
           <Link href="/pricing" className="text-xs uppercase tracking-[0.05em] text-[#6B6560] hover:text-[#5C6B56] transition-colors">
             Pricing
           </Link>
+          <Link href="/testimonials" className="text-xs uppercase tracking-[0.05em] text-[#6B6560] hover:text-[#5C6B56] transition-colors">
+            Success Stories
+          </Link>
           <Link href="/about" className="text-xs uppercase tracking-[0.05em] text-[#6B6560] hover:text-[#5C6B56] transition-colors">
             About
           </Link>

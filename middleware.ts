@@ -7,6 +7,7 @@ const isPublicRoute = createRouteMatcher([
   '/start-free-trial',
   '/how-it-works',
   '/pricing',
+  '/testimonials',
   '/about',
   '/faq',
   '/privacy',
