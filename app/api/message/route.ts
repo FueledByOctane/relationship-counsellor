@@ -34,29 +34,27 @@ async function triggerCounsellorResponse(
     const hasPartnerB = partnerMessages.some(m => m.senderRole === 'partner-b');
     const isSoloSession = (hasPartnerA && !hasPartnerB) || (!hasPartnerA && hasPartnerB);
 
-    // Check if this is the first user message (solo partner just started)
-    const isFirstMessage = partnerMessages.length === 1;
+    // Extract the solo partner's name from their messages
+    const partnerAMsg = allMessages.find(m => m.senderRole === 'partner-a');
+    const partnerBMsg = allMessages.find(m => m.senderRole === 'partner-b');
+    const actualPartnerAName = partnerAMsg?.senderName;
+    const actualPartnerBName = partnerBMsg?.senderName;
 
-    // Extract partner names from messages if not provided
-    if (!partnerAName || !partnerBName) {
-      const partnerAMsg = allMessages.find(m => m.senderRole === 'partner-a');
-      const partnerBMsg = allMessages.find(m => m.senderRole === 'partner-b');
-      partnerAName = partnerAMsg?.senderName || 'Partner A';
-      partnerBName = partnerBMsg?.senderName || 'Partner B';
-    }
-
-    // Use solo session prompt if only one partner is present and it's their first message
+    // Use solo session prompt if only one partner has sent messages
     let systemPrompt: string;
-    if (isSoloSession && isFirstMessage) {
-      const soloPartnerName = hasPartnerA ? partnerAName : partnerBName;
+    if (isSoloSession) {
+      // Only use the name of the partner who is actually present
+      const soloPartnerName = actualPartnerAName || actualPartnerBName || 'there';
       systemPrompt = SOLO_SESSION_PROMPT + `\n\nThe person in this session is: ${soloPartnerName}. Address them by name.`;
     } else {
+      // Both partners have sent messages - use couples therapy prompt
       // Get the appropriate system prompt based on guidance mode
       systemPrompt = COUNSELLOR_PROMPTS[guidanceMode] || COUNSELLOR_PROMPTS.standard;
 
-      // Replace placeholders with actual names
-      // Add context about who is who at the start of the prompt
-      const nameContext = `\n\nParticipants in this session:\n- ${partnerAName} (Partner A)\n- ${partnerBName} (Partner B)\n\nUse their actual names when addressing them, never "[Name]" or "[Partner]".`;
+      // Only add name context for partners who have actually sent messages
+      const partnerADisplayName = actualPartnerAName || partnerAName || 'Partner A';
+      const partnerBDisplayName = actualPartnerBName || partnerBName || 'Partner B';
+      const nameContext = `\n\nParticipants in this session:\n- ${partnerADisplayName} (Partner A)\n- ${partnerBDisplayName} (Partner B)\n\nUse their actual names when addressing them, never "[Name]" or "[Partner]".`;
       systemPrompt = systemPrompt + nameContext;
     }
 
