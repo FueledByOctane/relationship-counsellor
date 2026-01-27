@@ -45,10 +45,20 @@ export default function MessageInput({
   const [message, setMessage] = useState('');
   const [isSending, setIsSending] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const { roomId, participant, partner, messages: allMessages, addMessage } = useChatStore();
+  const { roomId, participant, partner, messages: allMessages, addMessage, isCounsellorTyping } = useChatStore();
   const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const isTypingRef = useRef(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const wasCounsellorTypingRef = useRef(false);
+
+  // Auto-focus textarea when counsellor finishes typing
+  useEffect(() => {
+    if (wasCounsellorTypingRef.current && !isCounsellorTyping) {
+      // Counsellor just stopped typing - focus the input
+      textareaRef.current?.focus();
+    }
+    wasCounsellorTypingRef.current = isCounsellorTyping;
+  }, [isCounsellorTyping]);
 
   const sendTypingStatus = useCallback((typing: boolean) => {
     if (!roomId || !participant || isTypingRef.current === typing) return;
