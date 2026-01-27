@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import { getPusherServer } from '@/lib/pusher-server';
 import { createOpenAIClient } from '@/lib/openai';
-import { COUNSELLOR_PROMPTS, type GuidanceMode } from '@/lib/prompts';
+import { COUNSELLOR_PROMPTS, SOLO_SESSION_PROMPT, type GuidanceMode } from '@/lib/prompts';
 import { getSupabaseAdmin, shouldResetWeeklyUsage, resetWeeklyUsage } from '@/lib/supabase';
 import { v4 as uuidv4 } from 'uuid';
 import type { Message } from '@/types';
@@ -28,6 +28,15 @@ async function triggerCounsellorResponse(
       isTyping: true,
     });
 
+    // Check if only one partner has sent messages (excluding counsellor messages)
+    const partnerMessages = allMessages.filter(m => m.senderRole === 'partner-a' || m.senderRole === 'partner-b');
+    const hasPartnerA = partnerMessages.some(m => m.senderRole === 'partner-a');
+    const hasPartnerB = partnerMessages.some(m => m.senderRole === 'partner-b');
+    const isSoloSession = (hasPartnerA && !hasPartnerB) || (!hasPartnerA && hasPartnerB);
+
+    // Check if this is the first user message (solo partner just started)
+    const isFirstMessage = partnerMessages.length === 1;
+
     // Extract partner names from messages if not provided
     if (!partnerAName || !partnerBName) {
       const partnerAMsg = allMessages.find(m => m.senderRole === 'partner-a');
@@ -36,13 +45,20 @@ async function triggerCounsellorResponse(
       partnerBName = partnerBMsg?.senderName || 'Partner B';
     }
 
-    // Get the appropriate system prompt based on guidance mode
-    let systemPrompt = COUNSELLOR_PROMPTS[guidanceMode] || COUNSELLOR_PROMPTS.standard;
+    // Use solo session prompt if only one partner is present and it's their first message
+    let systemPrompt: string;
+    if (isSoloSession && isFirstMessage) {
+      const soloPartnerName = hasPartnerA ? partnerAName : partnerBName;
+      systemPrompt = SOLO_SESSION_PROMPT + `\n\nThe person in this session is: ${soloPartnerName}. Address them by name.`;
+    } else {
+      // Get the appropriate system prompt based on guidance mode
+      systemPrompt = COUNSELLOR_PROMPTS[guidanceMode] || COUNSELLOR_PROMPTS.standard;
 
-    // Replace placeholders with actual names
-    // Add context about who is who at the start of the prompt
-    const nameContext = `\n\nParticipants in this session:\n- ${partnerAName} (Partner A)\n- ${partnerBName} (Partner B)\n\nUse their actual names when addressing them, never "[Name]" or "[Partner]".`;
-    systemPrompt = systemPrompt + nameContext;
+      // Replace placeholders with actual names
+      // Add context about who is who at the start of the prompt
+      const nameContext = `\n\nParticipants in this session:\n- ${partnerAName} (Partner A)\n- ${partnerBName} (Partner B)\n\nUse their actual names when addressing them, never "[Name]" or "[Partner]".`;
+      systemPrompt = systemPrompt + nameContext;
+    }
 
     // Format messages for OpenAI
     const formattedMessages = allMessages.map((msg: Message) => ({
