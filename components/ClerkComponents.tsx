@@ -62,16 +62,22 @@ export function ClerkComponents({ variant, children }: ClerkComponentsProps) {
               className="text-2xl font-medium text-[#3D3531] mb-3"
               style={{ fontFamily: 'var(--font-cormorant), Cormorant Garamond, serif' }}
             >
-              Sign in to get started
+              Sign in for FREE to get started
             </h2>
-            <p className="text-[#6B6560] mb-8 leading-relaxed">
-              Create an account or sign in to start your relationship counselling session.
+            <p className="text-[#6B6560] mb-6 leading-relaxed">
+              Create a free account to start your relationship counselling session. No credit card required.
             </p>
             <SignInButton mode="modal">
-              <button className="w-full py-3 bg-gradient-to-r from-[#8B9D83] to-[#5C6B56] hover:from-[#7A8C74] hover:to-[#4B5A47] text-white font-medium rounded-xl transition-all">
+              <button className="w-full py-3 bg-gradient-to-r from-[#8B9D83] to-[#5C6B56] hover:from-[#7A8C74] hover:to-[#4B5A47] text-white font-medium rounded-xl transition-all mb-3">
                 Sign In
               </button>
             </SignInButton>
+            <Link
+              href="/start-free-trial"
+              className="text-sm text-[#5C6B56] hover:underline"
+            >
+              Learn more about our free trial
+            </Link>
           </div>
 
           {featurePreview}

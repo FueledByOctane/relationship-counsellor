@@ -224,11 +224,25 @@ function HomeContent() {
         </div>
 
         <p
-          className="text-[1.1rem] text-[#6B6560] max-w-[420px] leading-[1.7] mb-12"
+          className="text-[1.1rem] text-[#6B6560] max-w-[420px] leading-[1.7] mb-8"
           style={{ animation: 'fadeIn 1s ease-out 0.9s backwards' }}
         >
           A safe, gentle space where couples can communicate openly—guided by AI that listens without judgment.
         </p>
+
+        {/* Start Free Trial Button */}
+        <div
+          className="mb-12"
+          style={{ animation: 'fadeIn 1s ease-out 1.1s backwards' }}
+        >
+          <Link
+            href="/start-free-trial"
+            className="inline-block px-8 py-4 bg-gradient-to-br from-[#8B9D83] to-[#5C6B56] hover:from-[#7A8E75] hover:to-[#4D5C48] text-white text-lg font-medium rounded-2xl transition-all shadow-[0_4px_20px_-5px_rgba(92,107,86,0.4)] hover:-translate-y-1 hover:shadow-[0_8px_30px_-5px_rgba(92,107,86,0.5)]"
+          >
+            Start Free Trial
+          </Link>
+          <p className="text-sm text-[#9C8B7A] mt-3">No credit card required</p>
+        </div>
 
         {/* Scroll indicator */}
         <div
