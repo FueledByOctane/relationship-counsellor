@@ -232,6 +232,7 @@ function HomeContent() {
 
         {/* Start Free Trial Button */}
         <div
+          className="mb-20"
           style={{ animation: 'fadeIn 1s ease-out 1.1s backwards' }}
         >
           <Link
@@ -245,7 +246,7 @@ function HomeContent() {
 
         {/* Scroll indicator */}
         <div
-          className="absolute bottom-6 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2"
+          className="flex flex-col items-center gap-2"
           style={{ animation: 'fadeIn 1s ease-out 1.2s backwards' }}
         >
           <span className="text-[0.7rem] uppercase tracking-[0.15em] text-[#6B6560]">Begin</span>
