@@ -232,7 +232,6 @@ function HomeContent() {
 
         {/* Start Free Trial Button */}
         <div
-          className="mb-12"
           style={{ animation: 'fadeIn 1s ease-out 1.1s backwards' }}
         >
           <Link
@@ -246,16 +245,16 @@ function HomeContent() {
 
         {/* Scroll indicator */}
         <div
-          className="absolute bottom-12 left-1/2 -translate-x-1/2 flex flex-col items-center gap-3"
+          className="absolute bottom-6 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2"
           style={{ animation: 'fadeIn 1s ease-out 1.2s backwards' }}
         >
           <span className="text-[0.7rem] uppercase tracking-[0.15em] text-[#6B6560]">Begin</span>
-          <div className="scroll-line w-px h-10 bg-gradient-to-b from-[#8B9D83] to-transparent" />
+          <div className="scroll-line w-px h-8 bg-gradient-to-b from-[#8B9D83] to-transparent" />
         </div>
       </section>
 
       {/* Actions Section */}
-      <section className="px-4 md:px-8 py-16 md:py-24 relative z-10">
+      <section className="px-4 md:px-8 py-8 md:py-12 relative z-10">
         <div className="max-w-[900px] mx-auto">
           {mounted ? (
             <ClerkComponents variant="main">
