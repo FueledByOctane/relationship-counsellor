@@ -1,10 +1,21 @@
 import { NextResponse } from 'next/server';
+import { auth } from '@clerk/nextjs/server';
 import { getPusherServer } from '@/lib/pusher-server';
+import { getSupabaseAdmin } from '@/lib/supabase';
 
 export async function POST(request: Request) {
   try {
+    // Require authentication
+    const { userId: clerkUserId } = await auth();
+    if (!clerkUserId) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+
     const body = await request.json();
-    const { roomId, senderId, guidanceMode, isPaid, fieldName } = body;
+    const { roomId, senderId, guidanceMode, fieldName } = body;
 
     if (!roomId || !senderId) {
       return NextResponse.json(
@@ -12,6 +23,17 @@ export async function POST(request: Request) {
         { status: 400 }
       );
     }
+
+    // Get isPaid from database - never trust client
+    let isPaid = false;
+    const supabaseAdmin = getSupabaseAdmin();
+    const { data: profile } = await supabaseAdmin
+      .from('profiles')
+      .select('subscription_tier')
+      .eq('clerk_id', clerkUserId)
+      .single();
+
+    isPaid = profile?.subscription_tier === 'paid';
 
     const pusher = getPusherServer();
     await pusher.trigger(`presence-room-${roomId}`, 'room-settings', {

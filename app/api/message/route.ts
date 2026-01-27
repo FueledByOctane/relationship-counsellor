@@ -1,9 +1,13 @@
 import { NextResponse } from 'next/server';
+import { auth } from '@clerk/nextjs/server';
 import { getPusherServer } from '@/lib/pusher-server';
 import { createOpenAIClient } from '@/lib/openai';
 import { COUNSELLOR_PROMPTS, type GuidanceMode } from '@/lib/prompts';
+import { getSupabaseAdmin, shouldResetWeeklyUsage, resetWeeklyUsage } from '@/lib/supabase';
 import { v4 as uuidv4 } from 'uuid';
 import type { Message } from '@/types';
+
+const FREE_TIER_WEEKLY_LIMIT = 5;
 
 async function triggerCounsellorResponse(
   roomId: string,
@@ -89,6 +93,15 @@ async function triggerCounsellorResponse(
 
 export async function POST(request: Request) {
   try {
+    // Require authentication
+    const { userId: clerkUserId } = await auth();
+    if (!clerkUserId) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+
     const body = await request.json();
     const { roomId, messageId, senderId, senderName, senderRole, content, allMessages, guidanceMode, partnerName } = body;
 
@@ -97,6 +110,47 @@ export async function POST(request: Request) {
         { error: 'Missing required fields' },
         { status: 400 }
       );
+    }
+
+    // Check usage limits before allowing message
+    const supabaseAdmin = getSupabaseAdmin();
+    let { data: profile } = await supabaseAdmin
+      .from('profiles')
+      .select('*')
+      .eq('clerk_id', clerkUserId)
+      .single();
+
+    // Auto-create profile if it doesn't exist
+    if (!profile) {
+      const { data: newProfile } = await supabaseAdmin
+        .from('profiles')
+        .insert({ clerk_id: clerkUserId })
+        .select()
+        .single();
+      profile = newProfile;
+    }
+
+    if (profile) {
+      // Check if weekly reset is needed
+      if (shouldResetWeeklyUsage(profile.weekly_usage_reset_at)) {
+        await resetWeeklyUsage(profile.id);
+        profile.weekly_usage_count = 0;
+      }
+
+      // Check usage limit for free tier
+      const isPaid = profile.subscription_tier === 'paid';
+      if (!isPaid && profile.weekly_usage_count >= FREE_TIER_WEEKLY_LIMIT) {
+        return NextResponse.json(
+          { error: 'Weekly limit reached. Upgrade to continue.', limitReached: true },
+          { status: 403 }
+        );
+      }
+
+      // Increment usage count
+      await supabaseAdmin
+        .from('profiles')
+        .update({ weekly_usage_count: profile.weekly_usage_count + 1 })
+        .eq('id', profile.id);
     }
 
     const message: Message = {

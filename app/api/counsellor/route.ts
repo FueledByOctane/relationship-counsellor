@@ -1,11 +1,24 @@
 import { NextResponse } from 'next/server';
+import { auth } from '@clerk/nextjs/server';
 import { getPusherServer } from '@/lib/pusher-server';
 import { createOpenAIClient, COUNSELLOR_SYSTEM_PROMPT } from '@/lib/openai';
+import { getSupabaseAdmin, shouldResetWeeklyUsage, resetWeeklyUsage } from '@/lib/supabase';
 import { v4 as uuidv4 } from 'uuid';
 import type { Message } from '@/types';
 
+const FREE_TIER_WEEKLY_LIMIT = 5;
+
 export async function POST(request: Request) {
   try {
+    // Require authentication
+    const { userId: clerkUserId } = await auth();
+    if (!clerkUserId) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+
     const body = await request.json();
     const { roomId, messages } = body;
 
@@ -23,6 +36,32 @@ export async function POST(request: Request) {
         { error: 'OpenAI API key not configured' },
         { status: 500 }
       );
+    }
+
+    // Check usage limits before allowing counsellor response
+    const supabaseAdmin = getSupabaseAdmin();
+    const { data: profile } = await supabaseAdmin
+      .from('profiles')
+      .select('*')
+      .eq('clerk_id', clerkUserId)
+      .single();
+
+    if (profile) {
+      // Check if weekly reset is needed
+      let usageCount = profile.weekly_usage_count;
+      if (shouldResetWeeklyUsage(profile.weekly_usage_reset_at)) {
+        await resetWeeklyUsage(profile.id);
+        usageCount = 0;
+      }
+
+      // Check usage limit for free tier
+      const isPaid = profile.subscription_tier === 'paid';
+      if (!isPaid && usageCount >= FREE_TIER_WEEKLY_LIMIT) {
+        return NextResponse.json(
+          { error: 'Weekly limit reached. Upgrade to continue.', limitReached: true },
+          { status: 403 }
+        );
+      }
     }
 
     const pusher = getPusherServer();

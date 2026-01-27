@@ -1,9 +1,19 @@
 import { NextResponse } from 'next/server';
+import { auth } from '@clerk/nextjs/server';
 import { getPusherServer } from '@/lib/pusher-server';
 import type { Message } from '@/types';
 
 export async function POST(request: Request) {
   try {
+    // Require authentication
+    const { userId: clerkUserId } = await auth();
+    if (!clerkUserId) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+
     const body = await request.json();
     const { roomId, senderId, messages } = body;
 

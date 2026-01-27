@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server';
+import { auth } from '@clerk/nextjs/server';
 import { getPusherServer } from '@/lib/pusher-server';
+import { getSupabaseAdmin } from '@/lib/supabase';
 
 export async function POST(request: Request) {
   try {
@@ -8,10 +10,9 @@ export async function POST(request: Request) {
     const channelName = formData.get('channel_name') as string;
 
     const url = new URL(request.url);
-    const userId = url.searchParams.get('user_id');
+    const visitorId = url.searchParams.get('user_id');
     const userName = url.searchParams.get('user_name');
     const userRole = url.searchParams.get('user_role');
-    const isPaid = url.searchParams.get('is_paid') === 'true';
 
     if (!socketId || !channelName) {
       return NextResponse.json(
@@ -23,15 +24,30 @@ export async function POST(request: Request) {
     const pusher = getPusherServer();
 
     if (channelName.startsWith('presence-')) {
-      if (!userId || !userName || !userRole) {
+      if (!visitorId || !userName || !userRole) {
         return NextResponse.json(
           { error: 'Missing user info for presence channel' },
           { status: 400 }
         );
       }
 
+      // Verify isPaid from database - never trust client
+      let isPaid = false;
+      const { userId: clerkUserId } = await auth();
+
+      if (clerkUserId) {
+        const supabaseAdmin = getSupabaseAdmin();
+        const { data: profile } = await supabaseAdmin
+          .from('profiles')
+          .select('subscription_tier')
+          .eq('clerk_id', clerkUserId)
+          .single();
+
+        isPaid = profile?.subscription_tier === 'paid';
+      }
+
       const presenceData = {
-        user_id: userId,
+        user_id: visitorId,
         user_info: {
           name: userName,
           role: userRole,
@@ -39,12 +55,12 @@ export async function POST(request: Request) {
         },
       };
 
-      const auth = pusher.authorizeChannel(socketId, channelName, presenceData);
-      return NextResponse.json(auth);
+      const auth_response = pusher.authorizeChannel(socketId, channelName, presenceData);
+      return NextResponse.json(auth_response);
     }
 
-    const auth = pusher.authorizeChannel(socketId, channelName);
-    return NextResponse.json(auth);
+    const auth_response = pusher.authorizeChannel(socketId, channelName);
+    return NextResponse.json(auth_response);
   } catch (error) {
     console.error('Pusher auth error:', error);
     return NextResponse.json(
