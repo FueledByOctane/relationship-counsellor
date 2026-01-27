@@ -272,6 +272,7 @@ export default function StartFreeTrial() {
               <ul className="space-y-2">
                 <li><Link href="/start-free-trial" className="text-sm text-[#6B6560] hover:text-[#5C6B56] transition-colors">Start Free Trial</Link></li>
                 <li><Link href="/how-it-works" className="text-sm text-[#6B6560] hover:text-[#5C6B56] transition-colors">How It Works</Link></li>
+                <li><Link href="/pricing" className="text-sm text-[#6B6560] hover:text-[#5C6B56] transition-colors">Pricing</Link></li>
                 <li><Link href="/faq" className="text-sm text-[#6B6560] hover:text-[#5C6B56] transition-colors">FAQ</Link></li>
               </ul>
             </div>

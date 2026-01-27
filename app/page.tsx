@@ -335,7 +335,13 @@ function HomeContent() {
 
       {/* Footer */}
       <footer className="px-4 md:px-8 py-12 text-center relative z-10 border-t border-[#8B9D83]/15 mt-auto">
-        <div className="flex justify-center gap-8 mb-6">
+        <div className="flex justify-center flex-wrap gap-6 md:gap-8 mb-6">
+          <Link href="/how-it-works" className="text-xs uppercase tracking-[0.05em] text-[#6B6560] hover:text-[#5C6B56] transition-colors">
+            How It Works
+          </Link>
+          <Link href="/pricing" className="text-xs uppercase tracking-[0.05em] text-[#6B6560] hover:text-[#5C6B56] transition-colors">
+            Pricing
+          </Link>
           <Link href="/about" className="text-xs uppercase tracking-[0.05em] text-[#6B6560] hover:text-[#5C6B56] transition-colors">
             About
           </Link>
