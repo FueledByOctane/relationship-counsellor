@@ -1,11 +1,24 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { SignUpButton } from '@clerk/nextjs';
 
 export default function StartFreeTrial() {
+  const [showStickyCTA, setShowStickyCTA] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      // Show sticky CTA after scrolling 300px
+      setShowStickyCTA(window.scrollY > 300);
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   return (
-    <div className="min-h-screen bg-[#F7F4EE]">
+    <div className="min-h-screen bg-[#F7F4EE] pb-20 md:pb-0">
       {/* Texture overlay */}
       <div className="texture-overlay" />
 
@@ -262,6 +275,20 @@ export default function StartFreeTrial() {
           </p>
         </div>
       </section>
+
+      {/* Sticky CTA for mobile */}
+      <div
+        className={`fixed bottom-0 left-0 right-0 z-50 md:hidden bg-[#F7F4EE]/95 backdrop-blur-sm border-t border-[#8B9D83]/20 px-4 py-3 transition-transform duration-300 ${
+          showStickyCTA ? 'translate-y-0' : 'translate-y-full'
+        }`}
+      >
+        <SignUpButton mode="modal">
+          <button className="w-full py-3 bg-gradient-to-br from-[#8B9D83] to-[#5C6B56] hover:from-[#7A8E75] hover:to-[#4D5C48] text-white text-base font-medium rounded-xl transition-all shadow-[0_4px_15px_-3px_rgba(92,107,86,0.4)]">
+            Create Free Account
+          </button>
+        </SignUpButton>
+        <p className="text-xs text-center text-[#9C8B7A] mt-1">No credit card required</p>
+      </div>
 
       {/* Footer */}
       <footer className="px-4 md:px-8 py-12 relative z-10 border-t border-[#8B9D83]/15 mt-8">

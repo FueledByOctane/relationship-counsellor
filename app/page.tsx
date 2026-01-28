@@ -26,14 +26,43 @@ const MyFields = dynamic(() => import('@/components/MyFields'), {
 });
 
 function MobileMenu({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isOpen]);
+
   if (!isOpen) return null;
 
+  const handleOverlayClick = (e: React.MouseEvent | React.TouchEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    onClose();
+  };
+
+  const handleLinkClick = () => {
+    onClose();
+  };
+
   return (
-    <div className="fixed inset-0 z-50 md:hidden">
-      <div className="fixed inset-0 bg-black/20 backdrop-blur-sm" onClick={onClose} />
-      <div className="fixed top-0 right-0 h-full w-72 bg-[#F7F4EE] shadow-xl p-6">
+    <div className="fixed inset-0 z-[100] md:hidden">
+      <button
+        type="button"
+        className="fixed inset-0 bg-black/20 backdrop-blur-sm w-full h-full cursor-default"
+        onClick={handleOverlayClick}
+        onTouchEnd={handleOverlayClick}
+        aria-label="Close menu"
+      />
+      <div className="fixed top-0 right-0 h-full w-72 bg-[#F7F4EE] shadow-xl p-6 z-[101]">
         <button
+          type="button"
           onClick={onClose}
+          onTouchEnd={(e) => { e.preventDefault(); onClose(); }}
           className="absolute top-6 right-6 p-2 text-[#6B6560] hover:text-[#5C6B56]"
           aria-label="Close menu"
         >
@@ -42,29 +71,29 @@ function MobileMenu({ isOpen, onClose }: { isOpen: boolean; onClose: () => void 
           </svg>
         </button>
         <nav className="mt-12 space-y-6">
-          <Link href="/how-it-works" className="block text-lg text-[#3D3531] hover:text-[#5C6B56] transition-colors" onClick={onClose}>
+          <Link href="/how-it-works" className="block text-lg text-[#3D3531] hover:text-[#5C6B56] transition-colors" onClick={handleLinkClick}>
             How It Works
           </Link>
-          <Link href="/pricing" className="block text-lg text-[#3D3531] hover:text-[#5C6B56] transition-colors" onClick={onClose}>
+          <Link href="/pricing" className="block text-lg text-[#3D3531] hover:text-[#5C6B56] transition-colors" onClick={handleLinkClick}>
             Pricing
           </Link>
-          <Link href="/testimonials" className="block text-lg text-[#3D3531] hover:text-[#5C6B56] transition-colors" onClick={onClose}>
+          <Link href="/testimonials" className="block text-lg text-[#3D3531] hover:text-[#5C6B56] transition-colors" onClick={handleLinkClick}>
             Success Stories
           </Link>
-          <Link href="/about" className="block text-lg text-[#3D3531] hover:text-[#5C6B56] transition-colors" onClick={onClose}>
+          <Link href="/about" className="block text-lg text-[#3D3531] hover:text-[#5C6B56] transition-colors" onClick={handleLinkClick}>
             About
           </Link>
-          <Link href="/faq" className="block text-lg text-[#3D3531] hover:text-[#5C6B56] transition-colors" onClick={onClose}>
+          <Link href="/faq" className="block text-lg text-[#3D3531] hover:text-[#5C6B56] transition-colors" onClick={handleLinkClick}>
             FAQ
           </Link>
-          <Link href="/support" className="block text-lg text-[#3D3531] hover:text-[#5C6B56] transition-colors" onClick={onClose}>
+          <Link href="/support" className="block text-lg text-[#3D3531] hover:text-[#5C6B56] transition-colors" onClick={handleLinkClick}>
             Support
           </Link>
           <div className="pt-6 border-t border-[#8B9D83]/20">
             <Link
               href="/start-free-trial"
               className="block w-full py-3 bg-gradient-to-br from-[#8B9D83] to-[#5C6B56] text-white text-center font-medium rounded-xl"
-              onClick={onClose}
+              onClick={handleLinkClick}
             >
               Start Free Trial
             </Link>
